@@ -1,0 +1,29 @@
+.powergrid-cell {
+  @include user-select(none);
+
+  display:inline-block;
+  box-sizing: border-box;
+  border-right: solid 1px #eee;
+  min-height: 26px;
+  text-align: left;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+
+  overflow: hidden;
+
+  position: relative;
+
+  &:first-child {
+    border-left: solid 1px #eee;
+  }
+}
+
+.powergrid-text-renderer {
+  position: relative;
+
+  padding: 4px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+
+}

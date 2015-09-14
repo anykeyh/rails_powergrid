@@ -1,0 +1,17 @@
+.powergrid-row {
+  display: block;
+  border-bottom: solid 1px #eee;
+  white-space: nowrap;
+
+  &:nth-child(odd) {
+    background-color: #f0f8ff;
+  }
+
+  &:hover {
+    background-color: darken(#f0f8ff, 5%);
+  }
+
+  &.selected {
+    background-color: #a0d8ff
+  }
+}
