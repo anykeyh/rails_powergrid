@@ -1,0 +1,1 @@
+RailsPowergrid.EventBehaviors = {}

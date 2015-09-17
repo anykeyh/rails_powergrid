@@ -1,6 +1,5 @@
 RailsPowergrid.Editors.Text = React.createClass
   componentDidMount: ->
-    #@getDOMNode().querySelector("input").focus()
     @getDOMNode().querySelector("input").select()
 
   getInitialState: -> @props
@@ -10,7 +9,8 @@ RailsPowergrid.Editors.Text = React.createClass
     @setState(value: evt.target.value)
 
   componentWillUnmount: ->
-    @props.onUpdate?(@state.value)
+    if @state.value
+      @props.onUpdate?(@state.value)
 
   render: ->
     <div className="powergrid-editor-text"><input type="text" value={@state.value} onChange=@updateValue /></div>

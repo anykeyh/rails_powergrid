@@ -3,7 +3,7 @@ Action = React.createClass
 
   handleClick: ->
     return if @disabled
-    @action.onAction.call(@props.parent)
+    @action.onAction?(@props.parent)
 
   render: ->
     selLength = @props.parent.getSelection().length

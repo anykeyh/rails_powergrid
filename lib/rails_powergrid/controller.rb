@@ -2,20 +2,20 @@ class RailsPowergrid::GridController < ActionController::Base
   layout false
 
   before_filter :load_grid
-  before_filter :load_resource, only: [:read, :update, :update_field, :options_field, :delete]
-
-  def info
-    @grid.get_columns_info(self)
-  end
+  before_filter :load_resource, except: [:index]
 
   # LIST
   def index
     filter = params[:f] || {}
-    @query = @grid.model_scope.select(@grid.selected_fields).predicator(filter, permit: @grid.predicator_permit)
+    @query = @grid.prepare_query.predicator(filter, permit: @grid.predicator_permit)
 
     fix_order
 
-    render :json => @query.all.map{|x| @grid.retrieve_fields(x) }
+    render :json => @query.all.map{|x| @grid.get_hash(x) }
+  end
+
+  def new
+    render @grid.form
   end
 
   # CREATE
@@ -30,13 +30,12 @@ class RailsPowergrid::GridController < ActionController::Base
 
   # UPDATE
   def update_field
-    k,v = param_permits.first
-
-
-    @grid.get_column(k).set_value(@resource, v)
+    param_permits.each do |k,v|
+      @grid.get_column(k).set_value(@resource, v)
+    end
 
     if @resource.save
-      render :json => {status: "OK"}
+      render :json => @grid.get_hash(@resource)
     else
       render :json => {status: "FAIL"}, status: 501
     end
@@ -60,14 +59,11 @@ class RailsPowergrid::GridController < ActionController::Base
 private
 
   def fix_order
-    if params[:ob] && params[:od] && !@grid.sort_permit.select{|x| x.to_sym == params[:ob].to_sym }.empty?
-      direction = if params[:od] == "a"
-        :asc
-      else
-        :desc
-      end
+    field_by, direction = params[:ob], params[:od]
 
-      @query = @query.order("#{params[:ob].to_sym} #{direction}")
+    if field_by && direction && !@grid.sort_permit.select{|x| x.to_sym == field_by.to_sym }.empty?
+      col = @grid.get_column(field_by)
+      @query = col.apply_sort(@query, direction == "a" ? :asc : :desc)
     end
   end
   def load_resource

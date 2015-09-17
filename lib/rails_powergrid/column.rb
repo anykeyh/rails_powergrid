@@ -21,6 +21,14 @@ class RailsPowergrid::Column
       @column.opts[:allow_blank] = value
     end
 
+    def sort_by &block
+      @columns.opts[:sort_by] = block
+    end
+
+    def filter &block
+      @columns.opts[:filter] = block
+    end
+
   end
 
   DEFAULT_OPTIONS = {
@@ -51,9 +59,22 @@ class RailsPowergrid::Column
 
   def deep_access model, tree
     if tree.length > 1
-      deep_access(send(tree.first), tree[1..-1])
+      deep_access(model.try(tree.first), tree[1..-1])
     else
-      send(tree.first)
+      model.try(tree.first)
+    end
+  end
+
+  def deep_write model, tree, value
+    if tree.length > 1
+      deep_write(model.try(tree.first), tree[1..-1], value)
+    else
+      field = "#{tree.first}="
+
+      if model
+        model.send(field, value)
+        model.save!
+      end
     end
   end
 
@@ -61,8 +82,8 @@ class RailsPowergrid::Column
     if opts[:get]
       opts[:get].call(model)
     else
-      if @name =~ /\./
-        deep_access(model, @name.split(/\./))
+      if @name.to_s =~ /\./
+        deep_access(model, @name.to_s.split(/\./))
       else
         if model.respond_to? @name
           value = model.send(@name)
@@ -74,7 +95,7 @@ class RailsPowergrid::Column
           end
 
         else
-          raise "Model doesn't respond to `#{name}`"
+          raise "Model #{model} doesn't respond to `#{@name}`"
         end
       end
     end
@@ -84,12 +105,22 @@ class RailsPowergrid::Column
     if opts[:set]
       opts[:set].call(model, value)
     else
-      setter = "#@name="
-
-      if model.respond_to? setter
-        model.send(setter, value)
+      if @name.to_s =~ /\./
+        deep_write(model, @name.to_s.split(/\./), value)
       else
-        raise "Model doesn't respond to `#{setter}`"
+        assoc = model.class.reflect_on_association(@name)
+
+        setter = "#@name="
+
+        if assoc
+          model.send(setter, assoc.klass.find_by(id: value))
+        else
+          if model.respond_to? setter
+            model.send(setter, value)
+          else
+            raise "Model doesn't respond to `#{setter}`"
+          end
+        end
       end
     end
   end
@@ -127,6 +158,29 @@ class RailsPowergrid::Column
     @opts[:width]
   end
 
+  def apply_sort query, direction
+    if @opts[:sort_by]
+      @opts[:sort_by].call(query, direction)
+    else
+      col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
+      if col
+        query.order("#{name} #{direction}")
+      else
+        ref = model.reflect_on_association(name)
+
+        if ref
+          if ref.polymorphic?
+            query.order("#{ref.foreign_type} #{direction}, #{ref.foreign_key} #{direction}")
+          else
+            query.order("#{ref.foreign_key} #{direction}")
+          end
+        else
+          query #fallback
+        end
+      end
+    end
+  end
+
   def guess_editor
     col = model.columns.select{|x| x.name == name}.first
     if col
@@ -147,6 +201,7 @@ class RailsPowergrid::Column
         if ref.macro == :belongs_to
           "Select"
         else
+          raise "Unimplemented yet!"
           "SelectMultiple"
         end
       else

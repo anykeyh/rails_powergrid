@@ -31,6 +31,10 @@ class RailsPowergrid::Grid
       action :excel
     end
 
+    def form partial
+      @grid.form = partial
+    end
+
   end
 
   def dsl
@@ -63,11 +67,12 @@ class RailsPowergrid::Grid
 
   def initialize name
     @name = name
+    @form = "rails_powergrid/form"
     @columns = []
     @actions = []
   end
 
-  attr_accessor :model, :model_query
+  attr_accessor :model, :model_query, :form
   attr_reader :name
 
   def add_column name, opts={}, &block
@@ -90,8 +95,34 @@ class RailsPowergrid::Grid
     end
   end
 
-  def selected_fields
-    [:id, *@columns.map(&:name).map(&:to_sym)].uniq
+  def prepare_query
+    query = model_scope
+
+    db_fields = @model.columns.map(&:name).map(&:to_sym)
+
+    fields = @columns.inject([@model.primary_key.to_sym]) do |a, column|
+      if db_fields.include?(column.name.to_sym)
+        a << column.name.to_sym
+      else
+        assoc = @model.reflect_on_association(column.name)
+
+        if assoc
+          query = query.includes(column.name)
+
+          a << assoc.foreign_key.to_sym
+
+          if assoc.polymorphic?
+            a << assoc.foreign_type.to_sym
+          end
+        end
+      end
+
+      a
+    end.uniq
+
+    puts fields.inspect
+
+    query.select(fields)
   end
 
   def get_columns_info ctrl
@@ -126,7 +157,7 @@ class RailsPowergrid::Grid
     end
   end
 
-  def retrieve_fields model
+  def get_hash model
     @columns.inject({}) do |h, col|
       h[col.name] = col.get_value(model)
       h
@@ -137,6 +168,8 @@ class RailsPowergrid::Grid
   def id
     "powergrid_grid_#{name}"
   end
+
+
 
   def to_javascript
     props = {}

@@ -1,7 +1,5 @@
 model User do |query|
-  #query.includes(:category)
-  query.select(:updated_at).where("email LIKE ?", "test%")
-
+  query.select(:role_id, :updated_at)
 end
 
 column :id, visible: false
@@ -9,24 +7,17 @@ column :name, label: "Some very long name"
 
 column :role, label: "Role", allow_blank: true
 
-column :test, label: "Just A test", sortable: true, renderer: :money do
+column :"role.name" do
   set do |model, value|
-    model.name = "Test name! #{value}"
-  end
+    if model.role == nil
+      model.role = Role.new
+    end
 
-  get do |model|
-    model.updated_at
+    model.role.name = value
   end
 end
 
-#column :"category.name", label: "Category name", editor: :select, editor_opts: => "/categories/index.json" do
-#  set do |model, value|
-#    model.category_id = value
-#  end
-#end
-
-
 column :email, label: "E-mail", width: 160
 
-#default_actions
-action :audit
+default_actions
+#action :audit

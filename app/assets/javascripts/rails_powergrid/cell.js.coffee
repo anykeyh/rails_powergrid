@@ -1,42 +1,35 @@
+#=require ./event_behaviors
+
 RailsPowergrid.Cell = React.createClass
-  computeStyle: -> { width: "#{@state.opts.width}px" }
+  computeStyle: -> { width: "#{@props.opts.width}px" }
 
   getInitialState: ->
-    state = {
+    {
       editMode: false
     }
-    state[k]=v for k,v of @props
-
-    state
 
   handleDoubleClick: (evt) ->
-    if @state.opts.isEditable
+    if @props.opts.isEditable
       @setState editMode: true
 
   handleBlur: (evt) ->
     if @state.editMode
       @setState editMode: false
 
-  handleClick: (evt) ->
-    if evt.shiftKey
-      @props.parent.selectToRange(@props.rowPosition)
-    else if evt.ctrlKey || evt.metaKey
-      @props.parent.toggleSelection(@props.rowPosition)
-    else
-      @props.parent.setSelection(@props.rowPosition)
-
   handleEditionFinished: (value) ->
-    @state.parent.updateField(@state.objectId, @state.opts.field, value)
-    @setState(value: value)
+    if value isnt @state.value
+      @props.parent.updateField(@props.objectId, @props.opts.field, value)
 
   render: ->
-    <div className="powergrid-cell" style=@computeStyle() onClick=@handleClick onDoubleClick=@handleDoubleClick onBlur=@handleBlur >
+    <div className="powergrid-cell" style=@computeStyle()
+      onDoubleClick=@handleDoubleClick
+      onBlur=@handleBlur >
       {
         if @state.editMode
-          _editor = RailsPowergrid.Editors[@state.opts.editor]
-          <_editor parent=@props.parent objectId=@props.objectId cell=this opts=@state.opts value=@state.value onUpdate=@handleEditionFinished />
+          _editor = RailsPowergrid.Editors[@props.opts.editor]
+          <_editor parent=@props.parent objectId=@props.objectId cell=this opts=@props.opts value=@props.value onUpdate=@handleEditionFinished />
         else
-          _renderer = RailsPowergrid.Renderers[@state.opts.renderer]
-          <_renderer parent=@props.parent objectId=@props.objectId cell=this opts=@state.opts value=@state.value />
+          _renderer = RailsPowergrid.Renderers[@props.opts.renderer]
+          <_renderer parent=@props.parent objectId=@props.objectId cell=this opts=@props.opts value=@props.value />
       }
     </div>

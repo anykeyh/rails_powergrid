@@ -3,22 +3,38 @@ RailsPowergrid.Editors.Select = React.createClass
     {
       options: []
     }
+
   componentDidMount: ->
     RailsPowergrid.ajax "/grids/#{@props.parent.getName()}/#{@props.objectId}/#{@props.opts.field}/options",
       method: "POST"
       data: { field: @props.opts.field }
       success: (req) =>
-        @setState(options: JSON.parse(req.responseText))
+        value = null
+
+        options = JSON.parse(req.responseText)
+
+        for [id,text,selected] in options
+          if selected
+            value = id
+            break
+        @setState(options: options, value: value)
+
+    @getDOMNode().querySelector("select").focus()
+
+  updateValue: (evt) ->
+    @setState(value: evt.target.value)
+
+  componentWillUnmount: ->
+    @props.onUpdate?(@state.value)
 
   render: ->
+    currentSelection = @state.value
+
     <div className="powergrid-editor-select">
-      <select onChange=@updateValue>
+      <select value=currentSelection onChange=@updateValue>
         {
           for [id,text,selected] in @state.options
-            if selected
-              <option value="#{id}" selected="selected" >{text}</option>
-            else
-              <option value="#{id}" >{text}</option>
+            <option value="#{id}" key="#{id}">{text}</option>
         }
       </select>
     </div>

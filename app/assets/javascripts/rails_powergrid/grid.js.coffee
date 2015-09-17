@@ -17,6 +17,15 @@ RailsPowergrid.Grid = React.createClass
   componentDidMount: ->
     @refreshData()
 
+  updateRow: (data) ->
+    for row, idx in @state.data
+      console.log row.id, data.id, idx
+      if row.id is data.id
+        @state.data[idx] = data
+        console.log @state.data
+        @setState(data: @state.data)
+        return;
+
   updateField: (objectId, fieldName, value) ->
     data = {}
     data[fieldName] = value ? ""
@@ -24,6 +33,9 @@ RailsPowergrid.Grid = React.createClass
     RailsPowergrid.ajax "/grids/#{@state.name}/#{objectId}/update_field",
       method: "POST"
       data: { resource: data }
+      success: (req) =>
+        console.log "updateRow?"
+        @updateRow(JSON.parse(req.responseText))
       error: (req) =>
         console.log req.responseText
         alert "An error happens processing the data. Please contact software support"
@@ -60,7 +72,7 @@ RailsPowergrid.Grid = React.createClass
           alert "An error happens processing the data. Please contact software support"
     0
 
-
+  getColumns: -> @state.columns
   getSelection: -> @state.selectedRows
 
   getSelectedId: ->
@@ -120,7 +132,6 @@ RailsPowergrid.Grid = React.createClass
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
       <RailsPowergrid.HeadersColumn columns=@state.columns parent=this />
       {
-        console.log @state.columns
         if @state.data
           for row, idx in @state.data
             <RailsPowergrid.Row parent=this objectId=row.id key=row.id rowPosition=idx selected={(@state.selectedRows.indexOf(idx) != -1) } >

@@ -1,8 +1,17 @@
 RailsPowergrid.registerAction 'edit',
   label: "Edit"
   application: '1+'
-  onAction: ->
-    alert "TODO"
-    console.log "ACTION!"
+  onAction: (grid) ->
+    selection = grid.getSelection()
+    columns = grid.getColumns()
+    console.log(selection)
+    console.log(columns)
+
+
+    RailsPowergrid.Modal.show(
+      <RailsPowergrid.Modal title="Edit">
+        <RailsPowergrid.AjaxFormHTML url="/" />
+      </RailsPowergrid.Modal>
+    )
 
   icon: 'pencil-square-o'
