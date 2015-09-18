@@ -5,18 +5,18 @@ module Predicator
       "(" + value.map{ |v| self.create_predicate(v, opts) }.join(" #{op} ") + ")"
     end
 
-
-    def create_predicate parameters, opts
+    def create_predicate parameters, grid, opts
+      permits = grid.predicator_permit
       parameters.map do |k, v|
         if opts[:double_operators][k.to_sym]
           apply_double_operators(opts[:double_operators][k.to_sym], v, opts)
         elsif op=opts[:operators][k.to_sym]
           field, value = v
 
-          if opts[:permit].index(v.first)
-            "#{field} #{op} #{ActiveRecord::Base::sanitize(value)}"
+          if permits.include?(v.first.to_sym)
+            col = grid.get_column(field).get_filter(grid.model, op, ActiveRecord::Base::sanitize(value))
           else
-            raise "Parameter unpermitted: `#{field}`"
+            raise "Parameter unpermitted: `#{field}`, authorized = #{opts[:permit].inspect}"
           end
         end
       end.join(" ")
@@ -24,7 +24,6 @@ module Predicator
   end #class <<self
 
   DEFAULT_OPTS = {
-    permit: [],
     operators: {
       eq:     "=",
       neq:    "<>",
@@ -32,8 +31,10 @@ module Predicator
       lt:     "<",
       gte:    ">=",
       lte:    "<=",
+      :"in" => "IN",
       like:   "LIKE",
-      ilike:  "ILIKE"
+      ilike:  "ILIKE",
+      is_null: "IS_NULL"
     },
     double_operators: {
       :"and" => "AND", :or => "OR"
@@ -58,11 +59,11 @@ module Predicator
 end
 
 class ActiveRecord::Base
-  def self.predicator parameter, opts = {}
+  def self.predicator parameter, grid, opts={}
     #begin
     params = parameter
     opts = Predicator::DEFAULT_OPTS.merge(opts)
-    return where(Predicator::create_predicate(params, opts))
+    return where(Predicator::create_predicate(params, grid, opts))
     #rescue
     #  return self
     #end

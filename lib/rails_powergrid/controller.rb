@@ -2,14 +2,17 @@ class RailsPowergrid::GridController < ActionController::Base
   layout false
 
   before_filter :load_grid
-  before_filter :load_resource, except: [:index]
+  before_filter :load_resource, except: [:index, :destroy]
+  def prepare_collection_query
+    filter = params[:f] || {}
+    @query = @grid.prepare_query.predicator(filter, @grid)
+
+    fix_order
+  end
 
   # LIST
   def index
-    filter = params[:f] || {}
-    @query = @grid.prepare_query.predicator(filter, permit: @grid.predicator_permit)
-
-    fix_order
+    prepare_collection_query
 
     render :json => @query.all.map{|x| @grid.get_hash(x) }
   end
@@ -47,13 +50,17 @@ class RailsPowergrid::GridController < ActionController::Base
     if col
       render :json => col.options_for(@resource)
     else
-      render :json => { status: "FAIL" }, status: 404
+      render :json => { status: "NOTFOUND" }, status: 404
     end
   end
 
   # DESTROY
+  # (Well, the mass version of it ^^)
   def destroy
-    @resource.destroy
+    prepare_collection_query
+
+    @query.where("#{@grid.model.arel_table.name}.id in (?)", params[:ids]).each(&:destroy)
+    render :json => { status: "OK" }
   end
 
 private
@@ -61,11 +68,17 @@ private
   def fix_order
     field_by, direction = params[:ob], params[:od]
 
-    if field_by && direction && !@grid.sort_permit.select{|x| x.to_sym == field_by.to_sym }.empty?
+    if field_by && direction && @grid.sort_permit.select{|x| x.to_sym == field_by.to_sym }.any?
       col = @grid.get_column(field_by)
       @query = col.apply_sort(@query, direction == "a" ? :asc : :desc)
     end
   end
+
+  #def ensure_json_request
+  #  return if params[:format] == "json" || request.headers["Accept"] =~ /json/
+  #  render :nothing => true, :status => 406
+  #end
+
   def load_resource
     @resource = @grid.model.find(params[:id])
   end

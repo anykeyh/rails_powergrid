@@ -3,28 +3,71 @@
 #=require ./action_bar
 #=require ./ajax
 RailsPowergrid.Grid = React.createClass
+  statics:
+    _gridList: {}
+    get: (name) -> RailsPowergrid.Grid._gridList[name]
+    _register: (name, instance) -> RailsPowergrid.Grid._gridList[name] = instance
+
   getInitialState: ->
     state = {
       selectedRows: []
+      filters: {}
     }
     state[k]=v for k,v of @props
 
     state
 
-  getName: ->
-    @state.name
+  getName: -> @state.name
 
   componentDidMount: ->
+    RailsPowergrid.Grid._register(@getName(), this)
     @refreshData()
 
   updateRow: (data) ->
     for row, idx in @state.data
-      console.log row.id, data.id, idx
       if row.id is data.id
         @state.data[idx] = data
-        console.log @state.data
         @setState(data: @state.data)
         return;
+
+  setDefaultFilter: (x, opts...) ->
+    if typeof(x) is "string"
+      @setState defaultFilter: RailsPowergrid.where.apply( null, [x].concat(opts) ).predicates
+    else
+      @setState defaultFilter: x
+
+    @refreshData()
+
+  setFilter: (key, operator, value) ->
+    if key is "is_null"
+      @state.filters[key] = [operator, null]
+    else if value? and value isnt ""
+      @state.filters[key] = [operator, value]
+    else
+      delete @state.filters[key]
+
+    @setState filters: @state.filters
+    @refreshData()
+
+  getCustomizedFilters: ->
+    filters = null
+
+    for k,v of @state.filters
+      continue if v[1] is "" or v[1] is null
+      console.log "#{k} #{v[0]} ?", v[1]
+      filters = (if filters? then filters else RailsPowergrid).where("#{k} #{v[0]} ?", v[1])
+
+    return filters?.predicates
+
+  getActiveFilters: (x) ->
+    currentCustomizedFilters = @getCustomizedFilters()
+    if @state.defaultFilter?
+      if currentCustomizedFilters?
+        { "and": [ @state.defaultFilter, currentCustomizedFilters ] }
+      else
+        @state.defaultFilter
+    else
+      currentCustomizedFilters
 
   updateField: (objectId, fieldName, value) ->
     data = {}
@@ -56,15 +99,9 @@ RailsPowergrid.Grid = React.createClass
     # We timeout the refresh because sometimes there's setState before
     # and it won't allow the data to be updated otherwise.
     window.setTimeout =>
-      data = {}
-
-      if @state.orderColumn && @state.orderDirection
-        data.ob = @state.orderColumn
-        data.od = @state.orderDirection
-
       RailsPowergrid.ajax "/grids/#{@state.name}",
         method: "POST"
-        data: data
+        data: @getPOSTParameters()
         success: (req) =>
           @setState data: JSON.parse(req.responseText), selectedRows: []
         error: (req) =>
@@ -72,10 +109,22 @@ RailsPowergrid.Grid = React.createClass
           alert "An error happens processing the data. Please contact software support"
     0
 
+  getPOSTParameters: ->
+    data = {}
+
+    if @state.orderColumn && @state.orderDirection
+      data.ob = @state.orderColumn
+      data.od = @state.orderDirection
+
+    filters = @getActiveFilters()
+    data.f = filters if filters?
+
+    data
+
   getColumns: -> @state.columns
   getSelection: -> @state.selectedRows
 
-  getSelectedId: ->
+  getSelectedIds: ->
     for x in @state.selectedRows
       @state.data[x].id
 
@@ -84,17 +133,25 @@ RailsPowergrid.Grid = React.createClass
 
     @lastRowPosition=rowPosition
 
-  toggleSelection: (rowPosition, callOnce=true) ->
+    @fireSelectionChangeEvent()
+
+
+  fireSelectionChangeEvent: ->
+    @state.onSelectionChange?(@state.selectedRows)
+
+  toggleSelection: (rowPosition, updateState=true) ->
     if (idx = @state.selectedRows.indexOf(rowPosition)) is -1
       @state.selectedRows = @state.selectedRows.concat(rowPosition)
 
-      if callOnce
-        @setState selectedRows: @state.selectedRows.concat(rowPosition)
+      if updateState
+        @setState selectedRows: @state.selectedRows
+        @fireSelectionChangeEvent()
     else
       @state.selectedRows.splice(idx, 1)
 
-      if callOnce
+      if updateState
         @setState selectedRows: @state.selectedRows
+        @fireSelectionChangeEvent()
 
     @lastRowPosition=rowPosition
 
@@ -114,7 +171,7 @@ RailsPowergrid.Grid = React.createClass
           @selectToRange sel
         else
           @setSelection sel
-        
+
 
   selectToRange: (rowPosition) ->
     decal = if rowPosition > @lastRowPosition then 1 else -1
@@ -124,12 +181,13 @@ RailsPowergrid.Grid = React.createClass
     @setState selectedRows: @state.selectedRows
 
   render: ->
-    <div className="powergrid powergrid-clearfix" 
-      onMouseUp=@handleMouseUp 
-      onMouseMove=@handleMouseMove 
+    <div className="powergrid powergrid-clearfix"
+      onMouseUp=@handleMouseUp
+      onMouseMove=@handleMouseMove
       onKeyDown=@handleKeyPress
       tabIndex=0>
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
+      <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
       <RailsPowergrid.HeadersColumn columns=@state.columns parent=this />
       {
         if @state.data

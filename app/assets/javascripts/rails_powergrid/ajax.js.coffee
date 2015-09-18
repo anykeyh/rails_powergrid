@@ -25,6 +25,10 @@ flattenParameters = (obj, prefix, output) ->
   output
 
 RailsPowergrid.ajax = (url, opts) ->
+  opts.error ?= ->
+    console.log req.responseText
+    alert "An error happens processing the data. Please contact software support"
+
   req = new XMLHttpRequest()
 
   req.onreadystatechange = (evt) ->
@@ -45,7 +49,7 @@ RailsPowergrid.ajax = (url, opts) ->
       for k,v of opts.headers
         req.setRequestHeader(k, v)
 
-    if ['POST', 'PUT', 'PATCH'].indexOf(opts.method.toUpperCase()) isnt -1
+    if ['POST', 'PUT', 'PATCH', 'DELETE'].indexOf(opts.method.toUpperCase()) isnt -1
       req.setRequestHeader("Content-Type", "application/json") unless opts.headers?["Content-Type"]?
       req.send(JSON.stringify(opts.data))
     else

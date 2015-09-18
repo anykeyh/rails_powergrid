@@ -1,0 +1,52 @@
+.powergrid-filter {
+  float: left;
+  position: relative;
+
+  .powergrid-operation{
+    @include user-select(none);
+    width: 15px;
+    float: left;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+
+    @include filter-gradient(#ffffff, #ededed, vertical);
+    @include background-image(
+      linear-gradient(
+        top,
+        rgba(255,255,255,1) 0%, 
+        rgba(246,246,246,1) 47%, 
+        rgba(237,237,237,1) 100%)
+    );
+
+    &:hover {
+      @include background-image(
+        linear-gradient(
+          top,
+          rgba(255,255,255,1) 0%, 
+          rgba(240,240,240,1) 47%, 
+          rgba(220,220,220,1) 100%)
+      );
+    }
+
+    &:active {
+      @include background-image(
+        linear-gradient(
+          top,
+          rgba(255,255,255,1) 0%, 
+          rgba(237,237,237,1) 47%, 
+          rgba(210,210,210,1) 100%)
+      );
+    }
+  }
+
+  .powergrid-filter-block {
+    width: calc(100% - 15px);
+    float: left;
+  }
+
+  input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

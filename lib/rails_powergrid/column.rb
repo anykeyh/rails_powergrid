@@ -29,6 +29,10 @@ class RailsPowergrid::Column
       @columns.opts[:filter] = block
     end
 
+    def type value
+      @columns.opts[:type] = value
+    end
+
   end
 
   DEFAULT_OPTIONS = {
@@ -125,6 +129,28 @@ class RailsPowergrid::Column
     end
   end
 
+
+  def get_filter model, operator, value
+    if opts[:filter]
+      opts[:filter].call(model, operator, value)
+    else
+      if model.column_names.include?(@name)
+        "#{@name} #{operator} (#{value})"
+      else
+        assoc = model.reflect_on_association(@name)
+        if assoc
+          if assoc.klass.column_names.include?("name")
+            "#{@name.to_s.pluralize}.name #{operator} (#{value})"
+          else
+            raise "I don't know how to filter #{@name}!"
+          end
+        else
+          raise "I don't know how to filter #{@name}!"
+        end
+      end
+    end
+  end
+
   def is_editable?
     !!@opts[:editable]
   end
@@ -142,7 +168,7 @@ class RailsPowergrid::Column
   end
 
   def label
-    @opts[:label] || @name.try(:capitalize)
+    @opts[:label] || @name.try(:to_s).try(:capitalize)
   end
 
 
@@ -235,8 +261,29 @@ class RailsPowergrid::Column
     (@opts[:editor] || guess_editor).capitalize
   end
 
-  def type
+  def guess_type
+    col = model.columns.select{|x| x.name == name}.first
+    if col
+      case col.type
+      when "boolean"
+        "Boolean"
+      when "integer"
+        "Number"
+      when "datetime"
+        "Datetime"
+      else
+        "Text"
+      end
+    else
+      ref = model.reflect_on_association(name)
+      if ref
+        "Text" #Default fallback
+      end
+    end
+  end
 
+  def type
+    (@opts[:type] || guess_type)
   end
 
   def to_hash

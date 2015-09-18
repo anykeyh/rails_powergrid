@@ -1,5 +1,6 @@
 model User do |query|
-  query.select(:role_id, :updated_at)
+  query = query.select(:role_id, :updated_at)
+  query = query.joins("LEFT JOIN roles ON roles.id = users.role_id")
 end
 
 column :id, visible: false

@@ -49,6 +49,11 @@ module RailsPowergrid
       require 'rails_powergrid/ext/routing'
       require 'rails_powergrid/ext/predicator'
 
+      if Gem::Specification.find_all_by_name('rubyXL').any?
+        #Rails.logger.info "RailsPowergrid Module Excel Activated"
+        require 'rails_powergrid/excel'
+      end
+
       setup_autoload!
 
       Sprockets.append_path(stylesheets_path)
@@ -60,6 +65,7 @@ module RailsPowergrid
     def grid name
       RailsPowergrid::Grid.load(name).to_javascript
     end
+
 
   end
 end

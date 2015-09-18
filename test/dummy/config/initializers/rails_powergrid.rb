@@ -1,0 +1,1 @@
+#RailsPowergrid::activate_excel_ext!

@@ -1,7 +1,44 @@
-FilterColumn = React.createClass
+FilterColumn = RailsPowergrid.FilterColumn = React.createClass
+  statics:
+    OPERATIONS_SYMBOLS:     ["=", "≠", "≥", "≤", ">", "<", "*", "<NULL>"]
+    OPERATIONS_OPERATORS:   ["=", "!=", ">=", "<=", ">", "<", "like", "is_null"]
+
+
+  getInitialState: ->
+    {
+      currentOperation: 0
+      value: @props.value
+    }
+
+  computeStyle: -> { width: "#{@props.data.width}px" }
+
+  askForFetchingData: () ->
+    window.clearTimeout(@_timeout) if @_timeout?
+
+    @_timeout = window.setTimeout(
+      => @props.parent.setFilter(@props.data.field, FilterColumn.OPERATIONS_OPERATORS[@state.currentOperation], @state.value)
+      300
+    )
+
+  handleOperationSwitch: ->
+    @state.currentOperation = (@state.currentOperation + 1) % FilterColumn.OPERATIONS_SYMBOLS.length
+    @setState currentOperation: @state.currentOperation
+    @askForFetchingData()
+
+
+  changeValue: (evt) ->
+    @state.value = evt.target.value
+    @setState(value: evt.target.value)
+    @askForFetchingData()
+
   render: ->
-    <div className="powergrid-filter">
-      <div className="powergrid-operation"></div>
+    <div className="powergrid-filter" style=@computeStyle() >
+      <div className="powergrid-operation" onClick=@handleOperationSwitch>
+        {FilterColumn.OPERATIONS_SYMBOLS[@state.currentOperation]}
+      </div>
+      <div className="powergrid-filter-block">
+        <input type="text" value=@state.value onChange=@changeValue ></input>
+      </div>
     </div>
 RailsPowergrid.FiltersBar = React.createClass
   render: ->

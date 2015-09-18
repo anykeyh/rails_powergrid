@@ -2,6 +2,12 @@
 class RailsPowergrid::Grid
 
   class DSL
+    class << self
+      attr_accessor :opts_default_actions
+    end
+
+    self.opts_default_actions = [:new, :edit, :delete, :audit]
+
     def initialize grid
       @grid = grid
     end
@@ -23,12 +29,7 @@ class RailsPowergrid::Grid
     end
 
     def default_actions
-      action :new
-      action :edit
-      action :delete
-
-      action :audit
-      action :excel
+      self.class.opts_default_actions.each{ |s| action(s) }
     end
 
     def form partial
@@ -83,6 +84,13 @@ class RailsPowergrid::Grid
     @columns.select{|x| x.name.to_sym == name.to_sym}.first
   end
 
+  def column_names
+    @columns.map(&:name)
+  end
+
+  def columns
+    @columns
+  end
 
   def add_action name
     @actions << name
@@ -123,14 +131,6 @@ class RailsPowergrid::Grid
     puts fields.inspect
 
     query.select(fields)
-  end
-
-  def get_columns_info ctrl
-    infos = {}
-
-    @columns.each do |arr|
-      name, opts = arr
-    end
   end
 
   def predicator_permit

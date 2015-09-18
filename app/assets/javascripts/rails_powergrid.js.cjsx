@@ -7,6 +7,7 @@
 #= require ./rails_powergrid/editors/_base
 #= require ./rails_powergrid/actions/_base
 #= require ./rails_powergrid/renderers/_base
+#= require ./rails_powergrid/predicator/_base
 #
 
 @RailsPowergrid = {}
