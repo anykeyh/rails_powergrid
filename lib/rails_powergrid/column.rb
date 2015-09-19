@@ -22,15 +22,15 @@ class RailsPowergrid::Column
     end
 
     def sort_by &block
-      @columns.opts[:sort_by] = block
+      @column.opts[:sort_by] = block
     end
 
     def filter &block
-      @columns.opts[:filter] = block
+      @column.opts[:filter] = block
     end
 
     def type value
-      @columns.opts[:type] = value
+      @column.opts[:type] = value
     end
 
   end
@@ -134,8 +134,8 @@ class RailsPowergrid::Column
     if opts[:filter]
       opts[:filter].call(model, operator, value)
     else
-      if model.column_names.include?(@name)
-        "#{@name} #{operator} (#{value})"
+      if model.column_names.include?(@name.to_s)
+        "#{model.arel_table.name}.#{@name} #{operator} (#{value})"
       else
         assoc = model.reflect_on_association(@name)
         if assoc
@@ -173,11 +173,25 @@ class RailsPowergrid::Column
 
 
   def renderer
-    (@opts[:renderer] || "Text").capitalize
+    (@opts[:renderer] || guess_renderer).capitalize
   end
 
   def guess_renderer
+    col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
+    if col
+      case col.type
+      when :boolean
+        return "Boolean"
+      when :integer
+        return "Number"
+      when :datetime
+        return "Datetime"
+      else
+        return "Text"
+      end
+    end
 
+    return "Text"
   end
 
   def width
@@ -208,14 +222,14 @@ class RailsPowergrid::Column
   end
 
   def guess_editor
-    col = model.columns.select{|x| x.name == name}.first
+    col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
     if col
       case col.type
-      when "boolean"
+      when :boolean
         "Boolean"
-      when "integer"
+      when :integer
         "Number"
-      when "datetime"
+      when :datetime
         "Datetime"
       else
         "Text"
@@ -262,23 +276,21 @@ class RailsPowergrid::Column
   end
 
   def guess_type
-    col = model.columns.select{|x| x.name == name}.first
+    col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
     if col
-      case col.type
-      when "boolean"
+      puts col.type
+      case col.type.to_sym
+      when :boolean
         "Boolean"
-      when "integer"
+      when :integer
         "Number"
-      when "datetime"
+      when :datetime
         "Datetime"
       else
         "Text"
       end
     else
-      ref = model.reflect_on_association(name)
-      if ref
-        "Text" #Default fallback
-      end
+      "Text" #Default fallback
     end
   end
 
@@ -296,7 +308,8 @@ class RailsPowergrid::Column
       isSortable: is_sortable?,
       editor: editor,
       renderer: renderer,
-      label: label
+      label: label,
+      type: type
     }
   end
 

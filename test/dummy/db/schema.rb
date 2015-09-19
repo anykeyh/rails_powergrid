@@ -11,7 +11,34 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150914054658) do
+ActiveRecord::Schema.define(version: 20150918073949) do
+
+  create_table "authors", force: :cascade do |t|
+    t.string   "first_name"
+    t.string   "last_name"
+    t.string   "nationality"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  add_index "authors", ["first_name"], name: "index_authors_on_first_name"
+  add_index "authors", ["last_name"], name: "index_authors_on_last_name"
+  add_index "authors", ["nationality"], name: "index_authors_on_nationality"
+
+  create_table "books", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "author_id"
+    t.text     "summary"
+    t.string   "isbn_number"
+    t.datetime "published_at"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
+  end
+
+  add_index "books", ["author_id"], name: "index_books_on_author_id"
+  add_index "books", ["isbn_number"], name: "index_books_on_isbn_number"
+  add_index "books", ["name"], name: "index_books_on_name"
+  add_index "books", ["published_at"], name: "index_books_on_published_at"
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"

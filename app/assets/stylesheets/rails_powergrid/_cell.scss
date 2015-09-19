@@ -27,3 +27,14 @@
   overflow: hidden;
 
 }
+
+.powergrid-number-renderer {
+  position: relative;
+  text-align: center;
+
+  padding: 4px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
