@@ -1,7 +1,7 @@
 FilterColumn = RailsPowergrid.FilterColumn = React.createClass
   statics:
     OPERATIONS_SYMBOLS:     ["=", "≠", "≥", "≤", ">", "<", "*", "<NULL>"]
-    OPERATIONS_OPERATORS:   ["=", "!=", ">=", "<=", ">", "<", "like", "is_null"]
+    OPERATIONS_OPERATORS:   ["=", "!=", ">=", "<=", ">", "<", "like", "null"]
 
 
   getInitialState: ->
@@ -33,12 +33,21 @@ FilterColumn = RailsPowergrid.FilterColumn = React.createClass
 
   render: ->
     <div className="powergrid-filter" style=@computeStyle() >
-      <div className="powergrid-operation" onClick=@handleOperationSwitch>
-        {FilterColumn.OPERATIONS_SYMBOLS[@state.currentOperation]}
-      </div>
-      <div className="powergrid-filter-block">
-        <input type="text" value=@state.value onChange=@changeValue ></input>
-      </div>
+      {
+        if FilterColumn.OPERATIONS_OPERATORS[@state.currentOperation] is "null"
+          <div className="powergrid-operation noparam" onClick=@handleOperationSwitch>
+            {FilterColumn.OPERATIONS_SYMBOLS[@state.currentOperation]}
+          </div>
+        else
+          <div>
+            <div className="powergrid-operation" onClick=@handleOperationSwitch>
+              {FilterColumn.OPERATIONS_SYMBOLS[@state.currentOperation]}
+            </div>
+            <div className="powergrid-filter-block">
+              <input type="text" value=@state.value onChange=@changeValue ></input>
+            </div>
+          </div>
+      }
     </div>
 
 RailsPowergrid.FiltersBar = React.createClass

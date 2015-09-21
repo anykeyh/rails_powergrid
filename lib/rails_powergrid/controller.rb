@@ -7,7 +7,7 @@ class RailsPowergrid::GridController < ActionController::Base
     filter = params[:f] || {}
     @query = @grid.prepare_query(self).predicator(filter, @grid)
 
-    fix_order
+    fix_order_and_limit_offset
   end
 
   # LIST
@@ -66,13 +66,23 @@ class RailsPowergrid::GridController < ActionController::Base
 
 private
 
-  def fix_order
+  def fix_order_and_limit_offset
     field_by, direction = params[:ob], params[:od]
+
 
     if field_by && direction && @grid.sort_permit.select{|x| x.to_sym == field_by.to_sym }.any?
       col = @grid.get_column(field_by)
       @query = col.apply_sort(@query, direction == "a" ? :asc : :desc)
     end
+
+    if params[:l]
+      @query = @query.limit(params[:l].to_i)
+    end
+
+    if params[:o]
+      @query = @query.offset(params[:o].to_i)
+    end
+
   end
 
   #def ensure_json_request

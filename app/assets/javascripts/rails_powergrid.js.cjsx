@@ -11,3 +11,4 @@
 #
 
 @RailsPowergrid = {}
+@RailsPowergrid._GridStruct = {}

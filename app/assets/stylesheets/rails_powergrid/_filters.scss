@@ -1,10 +1,17 @@
+.powergrid-filter-bar {
+  white-space: nowrap;
+}
+
 .powergrid-filter {
-  float: left;
+  display:inline-block;
   position: relative;
 
   .powergrid-operation{
     @include user-select(none);
+
     width: 15px;
+    &.noparam { width: 100%; }
+
     float: left;
     text-align: center;
     cursor: pointer;

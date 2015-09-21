@@ -135,12 +135,20 @@ class RailsPowergrid::Column
       opts[:filter].call(model, operator, value)
     else
       if model.column_names.include?(@name.to_s)
-        "#{model.arel_table.name}.#{@name} #{operator} (#{value})"
+        if operator == "NULL"
+          "#{model.arel_table.name}.#{@name} IS NULL"
+        else
+          "#{model.arel_table.name}.#{@name} #{operator} (#{value})"
+        end
       else
         assoc = model.reflect_on_association(@name)
         if assoc
           if assoc.klass.column_names.include?("name")
-            "#{@name.to_s.pluralize}.name #{operator} (#{value})"
+            if operator == "NULL"
+              "#{assoc.klass.arel_table.name}.name #{operator} IS NULL"
+            else
+              "#{assoc.klass.arel_table.name}.name #{operator} (#{value})"
+            end
           else
             raise "I don't know how to filter #{@name}!"
           end

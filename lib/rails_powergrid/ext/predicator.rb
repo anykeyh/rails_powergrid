@@ -34,7 +34,7 @@ module Predicator
       :"in" => "IN",
       like:   "LIKE",
       ilike:  "ILIKE",
-      is_null: "IS_NULL"
+      null: "NULL"
     },
     double_operators: {
       :"and" => "AND", :or => "OR"
