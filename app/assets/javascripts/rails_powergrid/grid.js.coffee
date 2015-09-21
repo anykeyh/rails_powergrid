@@ -4,13 +4,16 @@
 #=require ./ajax
 RailsPowergrid.Grid = React.createClass
   statics:
+    REQUEST_LIMIT: 100
     _gridList: {}
     get: (name) -> RailsPowergrid.Grid._gridList[name]
     _register: (name, instance) -> RailsPowergrid.Grid._gridList[name] = instance
 
   getInitialState: ->
+    @selectedRows = []
+    @rows = {}
+
     state = {
-      selectedRows: []
       filters: {}
     }
     state[k]=v for k,v of @props
@@ -54,7 +57,6 @@ RailsPowergrid.Grid = React.createClass
 
     for k,v of @state.filters
       continue if v[1] is "" or v[1] is null
-      console.log "#{k} #{v[0]} ?", v[1]
       filters = (if filters? then filters else RailsPowergrid).where("#{k} #{v[0]} ?", v[1])
 
     return filters?.predicates
@@ -77,10 +79,8 @@ RailsPowergrid.Grid = React.createClass
       method: "POST"
       data: { resource: data }
       success: (req) =>
-        console.log "updateRow?"
         @updateRow(JSON.parse(req.responseText))
       error: (req) =>
-        console.log req.responseText
         alert "An error happens processing the data. Please contact software support"
 
   handleMouseMove: (evt) ->
@@ -103,11 +103,32 @@ RailsPowergrid.Grid = React.createClass
         method: "POST"
         data: @getPOSTParameters()
         success: (req) =>
-          @setState data: JSON.parse(req.responseText), selectedRows: []
+          @_unselectRow(rowPosition) for rowPosition in @selectedRows
+          @setState data: JSON.parse(req.responseText)
         error: (req) =>
-          console.log req.responseText
           alert "An error happens processing the data. Please contact software support"
     0
+
+  registerRow: (row) ->
+    @registerRowByPosition(row, row.props.rowPosition)
+
+  registerRowByPosition: (row, position) ->
+    @rows[position] = row
+
+  unregisterRow: (row) ->
+    @unregisterRowByPosition(row.props.rowPosition)
+
+  unregisterRowByPosition: (position) ->
+    delete @rows[position]
+
+  getRow: (rowPosition) ->
+    @rows[rowPosition]
+
+  _selectRow: (rowPosition) ->
+    @getRow(rowPosition).setState selected: true
+
+  _unselectRow: (rowPosition) ->
+    @getRow(rowPosition).setState selected: false
 
   getPOSTParameters: ->
     data = {}
@@ -122,39 +143,14 @@ RailsPowergrid.Grid = React.createClass
     data
 
   getColumns: -> @state.columns
-  getSelection: -> @state.selectedRows
+  getSelection: -> @selectedRows
 
   getSelectedIds: ->
     for x in @state.selectedRows
       @state.data[x].id
 
-  setSelection: (rowPosition) ->
-    @setState selectedRows: [rowPosition]
-
-    @lastRowPosition=rowPosition
-
-    @fireSelectionChangeEvent()
-
-
   fireSelectionChangeEvent: ->
-    @state.onSelectionChange?(@state.selectedRows)
-
-  toggleSelection: (rowPosition, updateState=true) ->
-    if (idx = @state.selectedRows.indexOf(rowPosition)) is -1
-      @state.selectedRows = @state.selectedRows.concat(rowPosition)
-
-      if updateState
-        @setState selectedRows: @state.selectedRows
-        @fireSelectionChangeEvent()
-    else
-      @state.selectedRows.splice(idx, 1)
-
-      if updateState
-        @setState selectedRows: @state.selectedRows
-        @fireSelectionChangeEvent()
-
-    @lastRowPosition=rowPosition
-
+    @state.onSelectionChange?.call(this, @selectedRows)
 
   handleKeyPress: (evt) ->
     switch evt.key
@@ -172,16 +168,72 @@ RailsPowergrid.Grid = React.createClass
         else
           @setSelection sel
 
+  _focusOnLastRowPosition: ->
+    dataBlock = @getDOMNode().querySelector(".powergrid-data-block")
+    height = dataBlock.offsetHeight
+    scroll = dataBlock.scrollTop
+
+    row = @rows[@lastRowPosition].getDOMNode()
+
+    wantedScroll = row.offsetTop + row.offsetHeight
+    minScrollWanted = Math.max(0, row.offsetTop + row.offsetHeight-height)
+    maxScrollWanted = row.offsetTop
+
+    dataBlock.scrollTop = Math.max(minScrollWanted,Math.min(maxScrollWanted,scroll))
+
+  setSelection: (rowPosition) ->
+    if @selectedRows
+      for x in @selectedRows
+        @_unselectRow(x)
+    @selectedRows = [rowPosition]
+    @_selectRow(rowPosition)
+    @lastRowPosition = rowPosition
+
+    @fireSelectionChangeEvent()
+    @_focusOnLastRowPosition()
+
+  toggleSelection: (rowPosition, updateState=true) ->
+    @selectedRows ||= []
+
+    if (idx = @selectedRows.indexOf(rowPosition)) is -1
+      @_selectRow(rowPosition)
+      @selectedRows.push rowPosition
+
+      if updateState
+        @fireSelectionChangeEvent()
+    else
+      @_unselectRow(rowPosition)
+      @selectedRows.splice(idx, 1)
+
+      if updateState
+        @fireSelectionChangeEvent()
+
+    @lastRowPosition=rowPosition
+    @_focusOnLastRowPosition()
 
   selectToRange: (rowPosition) ->
     decal = if rowPosition > @lastRowPosition then 1 else -1
     for x in [@lastRowPosition+decal .. rowPosition]
       @toggleSelection(x, false)
 
-    @setState selectedRows: @state.selectedRows
+
+  generateRows: ->
+    do =>
+      if @state.data
+        for row, idx in @state.data
+          <RailsPowergrid.Row parent=this objectId=row.id key=row.id rowPosition=idx >
+            {
+              for column in @state.columns
+                <RailsPowergrid.Cell key="#{column.field}" value=row[column.field] objectId=row.id rowPosition=idx opts=column parent=this />
+            }
+          </RailsPowergrid.Row>
+      else
+        []
 
   render: ->
-    <div className="powergrid powergrid-clearfix"
+    time = Date.now()
+
+    result = <div className="powergrid powergrid-clearfix"
       onMouseUp=@handleMouseUp
       onMouseMove=@handleMouseMove
       onKeyDown=@handleKeyPress
@@ -189,14 +241,12 @@ RailsPowergrid.Grid = React.createClass
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
       <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
       <RailsPowergrid.HeadersColumn columns=@state.columns parent=this />
-      {
-        if @state.data
-          for row, idx in @state.data
-            <RailsPowergrid.Row parent=this objectId=row.id key=row.id rowPosition=idx selected={(@state.selectedRows.indexOf(idx) != -1) } >
-              {
-                for column in @state.columns
-                  <RailsPowergrid.Cell key="#{row.id}#{column.field}" value=row[column.field] objectId=row.id rowPosition=idx opts=column parent=this />
-              }
-            </RailsPowergrid.Row>
-      }
+      <div className="powergrid-data-block">
+        {@generateRows()}
+      </div>
     </div>
+
+    time = Date.now()-time
+    console.log "#{time}ms"
+
+    result

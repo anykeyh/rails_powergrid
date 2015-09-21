@@ -40,6 +40,7 @@ FilterColumn = RailsPowergrid.FilterColumn = React.createClass
         <input type="text" value=@state.value onChange=@changeValue ></input>
       </div>
     </div>
+
 RailsPowergrid.FiltersBar = React.createClass
   render: ->
     <div className="powergrid-clearfix powergrid-filter-bar">

@@ -71,6 +71,8 @@ class RailsPowergrid::Grid
     @form = "rails_powergrid/form"
     @columns = []
     @actions = []
+
+    add_column :id, visible: false
   end
 
   attr_accessor :model, :model_query, :form
@@ -103,8 +105,8 @@ class RailsPowergrid::Grid
     end
   end
 
-  def prepare_query
-    query = model_scope
+  def prepare_query ctrl
+    query = model_scope(ctrl)
 
     db_fields = @model.columns.map(&:name).map(&:to_sym)
 
@@ -149,9 +151,9 @@ class RailsPowergrid::Grid
     @columns.select(&:is_sortable?).map(&:name)
   end
 
-  def model_scope
+  def model_scope ctrl
     if @model_query
-      @model_query.call(@model)
+      ctrl.instance_exec @model, &@model_query
     else
       @model
     end
@@ -168,8 +170,6 @@ class RailsPowergrid::Grid
   def id
     "powergrid_grid_#{name}"
   end
-
-
 
   def to_javascript
     props = {}

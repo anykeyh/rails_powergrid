@@ -5,7 +5,7 @@ class RailsPowergrid::GridController < ActionController::Base
   before_filter :load_resource, except: [:index, :destroy]
   def prepare_collection_query
     filter = params[:f] || {}
-    @query = @grid.prepare_query.predicator(filter, @grid)
+    @query = @grid.prepare_query(self).predicator(filter, @grid)
 
     fix_order
   end
@@ -36,6 +36,7 @@ class RailsPowergrid::GridController < ActionController::Base
     param_permits.each do |k,v|
       @grid.get_column(k).set_value(@resource, v)
     end
+
 
     if @resource.save
       render :json => @grid.get_hash(@resource)
@@ -80,7 +81,7 @@ private
   #end
 
   def load_resource
-    @resource = @grid.model.find(params[:id])
+    @resource = @grid.prepare_query(self).find(params[:id])
   end
 
   def load_grid

@@ -2,6 +2,7 @@
   display: block;
   border-bottom: solid 1px #eee;
   white-space: nowrap;
+  cursor: default;
 
   &:nth-child(odd) {
     background-color: #f0f8ff;
@@ -14,4 +15,10 @@
   &.selected {
     background-color: #a0d8ff
   }
+}
+
+.powergrid-data-block {
+  position: relative;
+  height: 300px;
+  overflow-y: auto;
 }

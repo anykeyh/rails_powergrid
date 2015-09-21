@@ -5,23 +5,24 @@ Action = React.createClass
     return if @disabled
     @action.onAction?(@props.parent)
 
-  render: ->
+  isEnabled:  ->
     selLength = @props.parent.getSelection().length
-    action = @getAction()
 
-    application = action.application
-
-    @disabled = switch application
+    switch application=@getAction().application
       when '*'
-        false
+        return
       else
         num = parseInt(application)
 
         if /\+$/.test(application)
-          selLength < num
+          selLength >= num
         else
-          selLength isnt num
+          selLength is num
 
+  render: ->
+    action = @getAction()
+
+    disabled = !@isEnabled()
 
     <div className="powergrid-action #{if @disabled then 'disabled' else ''}" title=action.label onClick=@handleClick >
       <i className="fa fa-#{action.icon}" />
