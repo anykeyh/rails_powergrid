@@ -1,55 +1,45 @@
 class RailsPowergrid::Column
-  class DSL
-    def initialize column, &block
-      @column = column
-      instance_eval(&block)
+  @default_options = {}
+  @hash_making_callbacks = []
+
+  class << self
+    attr_reader :default_options
+    attr_reader :hash_making_callbacks
+
+    def default_for name, value
+      @default_options[name] = value
     end
 
-    def get &block
-      @column.opts[:get] = block
+    def add_to_hash &block
+      @hash_making_callbacks << block
     end
-
-    def set &block
-      @column.opts[:set] = block
-    end
-
-    def opts_for_select &block
-      @column.opts[:opts_for_select] = block
-    end
-
-    def allow_blank value
-      @column.opts[:allow_blank] = value
-    end
-
-    def sort_by &block
-      @column.opts[:sort_by] = block
-    end
-
-    def filter &block
-      @column.opts[:filter] = block
-    end
-
-    def type value
-      @column.opts[:type] = value
-    end
-
   end
-
-  DEFAULT_OPTIONS = {
-    editable: true,
-    sortable: true,
-    filterable: true,
-    in_form: true,
-    visible: true,
-    width: 80
-  }
 
   attr_reader :name
   attr_reader :opts
 
+  def self._call_of(method)
+    proc{ |*args| send(method, *args) }
+  end
+
+  def _exec block, *args
+    instance_exec(*args, &block)
+  end
+
+  add_to_hash do
+    {
+      field: name
+    }
+  end
+
   def initialize grid, name, opts={}, &block
     @name = name
-    @opts = DEFAULT_OPTIONS.merge(opts)
+
+    @opts = self.class.default_options.merge(opts)
+    opts.each do |o, v|
+      send("#{o.to_s.gsub(/\?$/, "")}=", v)
+    end
+
     @grid = grid
 
     if block_given?
@@ -61,275 +51,26 @@ class RailsPowergrid::Column
     @grid.model
   end
 
-  def deep_access model, tree
-    if tree.length > 1
-      deep_access(model.try(tree.first), tree[1..-1])
-    else
-      model.try(tree.first)
-    end
-  end
-
-  def deep_write model, tree, value
-    if tree.length > 1
-      deep_write(model.try(tree.first), tree[1..-1], value)
-    else
-      field = "#{tree.first}="
-
-      if model
-        model.send(field, value)
-        model.save!
-      end
-    end
-  end
-
-  def get_value model
-    if opts[:get]
-      opts[:get].call(model)
-    else
-      if @name.to_s =~ /\./
-        deep_access(model, @name.to_s.split(/\./))
-      else
-        if model.respond_to? @name
-          value = model.send(@name)
-
-          if value.is_a?(ActiveRecord::Base)
-            return value.try(:name) || value.to_s
-          else
-            return value
-          end
-
-        else
-          raise "Model #{model} doesn't respond to `#{@name}`"
-        end
-      end
-    end
-  end
-
-  def set_value model, value
-    if opts[:set]
-      opts[:set].call(model, value)
-    else
-      if @name.to_s =~ /\./
-        deep_write(model, @name.to_s.split(/\./), value)
-      else
-        assoc = model.class.reflect_on_association(@name)
-
-        setter = "#@name="
-
-        if assoc
-          model.send(setter, assoc.klass.find_by(id: value))
-        else
-          if model.respond_to? setter
-            model.send(setter, value)
-          else
-            raise "Model doesn't respond to `#{setter}`"
-          end
-        end
-      end
-    end
-  end
-
-
-  def get_filter model, operator, value
-    if opts[:filter]
-      opts[:filter].call(model, operator, value)
-    else
-      if model.column_names.include?(@name.to_s)
-        if operator == "NULL"
-          "#{model.arel_table.name}.#{@name} IS NULL"
-        else
-          "#{model.arel_table.name}.#{@name} #{operator} (#{value})"
-        end
-      else
-        assoc = model.reflect_on_association(@name)
-        if assoc
-          if assoc.klass.column_names.include?("name")
-            if operator == "NULL"
-              "#{assoc.klass.arel_table.name}.name #{operator} IS NULL"
-            else
-              "#{assoc.klass.arel_table.name}.name #{operator} (#{value})"
-            end
-          else
-            raise "I don't know how to filter #{@name}!"
-          end
-        else
-          raise "I don't know how to filter #{@name}!"
-        end
-      end
-    end
-  end
-
-  def is_editable?
-    !!@opts[:editable]
-  end
-
-  def is_in_form?
-    !!@opts[:form]
-  end
-
-  def is_filterable?
-    !!@opts[:filterable]
-  end
-
-  def is_sortable?
-    !!@opts[:sortable]
-  end
-
-  def label
-    @opts[:label] || @name.try(:to_s).try(:capitalize)
-  end
-
-
-  def renderer
-    (@opts[:renderer] || guess_renderer).capitalize
-  end
-
-  def guess_renderer
-    col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
-    if col
-      case col.type
-      when :boolean
-        return "Boolean"
-      when :integer
-        return "Number"
-      when :datetime
-        return "Datetime"
-      else
-        return "Text"
-      end
-    end
-
-    return "Text"
-  end
-
-  def width
-    @opts[:width]
-  end
-
-  def apply_sort query, direction
-    if @opts[:sort_by]
-      @opts[:sort_by].call(query, direction)
-    else
-      col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
-      if col
-        query.order("#{model.arel_table.name}.#{name} #{direction}")
-      else
-        ref = model.reflect_on_association(name)
-
-        if ref
-          if ref.polymorphic?
-            query.order("#{ref.klass.arel_table.name}.#{ref.foreign_type} #{direction}, #{ref.klass.arel_table.name}.#{ref.foreign_key} #{direction}")
-          else
-            query.order("#{ref.klass.arel_table.name}.#{ref.foreign_key} #{direction}")
-          end
-        else
-          query #fallback
-        end
-      end
-    end
-  end
-
-  def guess_editor
-    col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
-    if col
-      case col.type
-      when :boolean
-        "Boolean"
-      when :integer
-        "Number"
-      when :datetime
-        "Datetime"
-      else
-        "Text"
-      end
-    else
-      #Check the associations
-      ref = model.reflect_on_association(name)
-      if ref
-        if ref.macro == :belongs_to
-          "Select"
-        else
-          raise "Unimplemented yet!"
-          "SelectMultiple"
-        end
-      else
-        "Text" #Default fallback
-      end
-    end
-  end
-
-  def options_for model_instance
-    if @opts[:opts_for_select]
-      return @opts[:opts_for_select].call()
-    else
-      ref = model.reflect_on_association(name)
-      selected_id = model_instance.send(ref.foreign_key)
-
-      if ref
-        arr = ref.klass.all.map{|x| [x.id, x.try(:name) || x.to_s, selected_id==x.id]}.sort{|a,b| a[1]<=>b[1]}
-
-        if opts[:allow_blank]
-          arr = [["","", !selected_id]]
-        end
-
-        return arr
-      end
-    end
-
-    return []
-  end
-
-  def editor
-    (@opts[:editor] || guess_editor).capitalize
-  end
-
-  def guess_type
-    col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
-    if col
-      puts col.type
-      case col.type.to_sym
-      when :boolean
-        "Boolean"
-      when :integer
-        "Number"
-      when :datetime
-        "Datetime"
-      else
-        "Text"
-      end
-    else
-      "Text" #Default fallback
-    end
-  end
-
-  def type
-    (@opts[:type] || guess_type)
-  end
-
-  # Some options used from React side, in case for editors/renderers
-  def html
-    (@opts[:html] || {})
-  end
-
-  def visible
-    @opts[:visible]
-  end
-
   def to_hash
-    {
-      field: name,
-      width: width,
-      isEditable: is_editable?,
-      isInForm: is_in_form?,
-      isFilterable: is_filterable?,
-      isSortable: is_sortable?,
-      editor: editor,
-      renderer: renderer,
-      label: label,
-      html: html,
-      type: type,
-      visible: visible
-    }
+    out = {}
+    self.class.hash_making_callbacks.each do |cb|
+      out.merge!(instance_eval(&cb))
+    end
+
+    out
   end
 
 end
+
+RailsPowergrid::_require "column/dsl"
+RailsPowergrid::_require "column/editor"
+RailsPowergrid::_require "column/filtering"
+RailsPowergrid::_require "column/form"
+RailsPowergrid::_require "column/getset"
+RailsPowergrid::_require "column/html"
+RailsPowergrid::_require "column/renderer"
+RailsPowergrid::_require "column/select"
+RailsPowergrid::_require "column/sorting"
+RailsPowergrid::_require "column/typing"
+RailsPowergrid::_require "column/visibility"
+

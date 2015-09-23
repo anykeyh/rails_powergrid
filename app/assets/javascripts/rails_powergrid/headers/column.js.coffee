@@ -9,7 +9,7 @@ HeaderColumn = React.createClass
   handleClick: (evt) ->
     return if @inResizing
 
-    if @props.data.isSortable
+    if @props.data.sortable
       parent = @props.parent
       parentState = @props.parent.state
 
@@ -68,7 +68,7 @@ RailsPowergrid.HeadersColumn = React.createClass
   render: ->
     <div className="powergrid-clearfix powergrid-header">
       {
-        for x in @props.columns
+        for x in @props.columns when x.visible
           <HeaderColumn parent=@props.parent data=x key="#{x.field}" />
       }
     </div>

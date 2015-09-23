@@ -17,5 +17,5 @@ RailsPowergrid._GridStruct.Scrolling =
     scroll = evt.target.scrollTop + evt.target.offsetHeight
     height = evt.target.scrollHeight
 
-    if scroll>=height
+    if scroll>=height-250
       @fetchNextPage()

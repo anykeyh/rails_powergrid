@@ -24,6 +24,10 @@ module RailsPowergrid
       @assets_path ||= File.join gem_path, 'app/assets'
     end
 
+    def _require file
+      require File.join gem_path, "lib", "rails_powergrid", file
+    end
+
     def setup_autoload!
       %w(app/helpers).each do |dir|
         path = File.join(File.expand_path('../..', __FILE__), dir )
@@ -65,8 +69,6 @@ module RailsPowergrid
     def grid name, opts={}
       RailsPowergrid::Grid.load(name).to_javascript(opts)
     end
-
-
   end
 end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150918073949) do
+ActiveRecord::Schema.define(version: 20150923024010) do
 
   create_table "authors", force: :cascade do |t|
     t.string   "first_name"
@@ -33,12 +33,36 @@ ActiveRecord::Schema.define(version: 20150918073949) do
     t.datetime "published_at"
     t.datetime "created_at",   null: false
     t.datetime "updated_at",   null: false
+    t.decimal  "price"
   end
 
   add_index "books", ["author_id"], name: "index_books_on_author_id"
   add_index "books", ["isbn_number"], name: "index_books_on_isbn_number"
   add_index "books", ["name"], name: "index_books_on_name"
   add_index "books", ["published_at"], name: "index_books_on_published_at"
+
+  create_table "order_lines", force: :cascade do |t|
+    t.integer  "book_id"
+    t.integer  "quantity"
+    t.decimal  "total"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "order_lines", ["book_id"], name: "index_order_lines_on_book_id"
+
+  create_table "orders", force: :cascade do |t|
+    t.string   "status",     default: "CART"
+    t.datetime "ordered_at"
+    t.decimal  "total"
+    t.integer  "user_id"
+    t.datetime "created_at",                  null: false
+    t.datetime "updated_at",                  null: false
+  end
+
+  add_index "orders", ["ordered_at"], name: "index_orders_on_ordered_at"
+  add_index "orders", ["total"], name: "index_orders_on_total"
+  add_index "orders", ["user_id"], name: "index_orders_on_user_id"
 
   create_table "roles", force: :cascade do |t|
     t.string   "name"

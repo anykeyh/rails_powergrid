@@ -1,0 +1,27 @@
+.powergrid-footer {
+
+    &>div {
+      float: left;
+      width: 50%;
+      padding: 0.25em;
+      box-sizing: border-box;
+
+      &:first-child{
+        border-right: solid 1px #ccc;
+      }
+    }
+    /*@include background-image(
+      linear-gradient(
+        top,
+        rgba(255,255,255,1) 0%,
+        rgba(246,246,246,1) 47%,
+        rgba(237,237,237,1) 100%)
+    );*/
+
+    background-color: rgba(246,246,246,1);
+
+    font-size: small;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    border-top: solid 1px #ccc;
+    @include clearfix();
+}

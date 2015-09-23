@@ -19,7 +19,7 @@ module Predicator
             else
               ActiveRecord::Base::sanitize(value)
             end
-            col = grid.get_column(field).get_filter(grid.model, op, safeValue)
+            col = grid.get_column(field).apply_filter(grid.model, op, safeValue)
           else
             raise "Parameter unpermitted: `#{field}`, authorized = #{opts[:permit].inspect}"
           end

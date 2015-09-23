@@ -34,15 +34,19 @@ include
 
   getName: -> @state.name
 
-  computeWidth: ->
+  getContentWrapperStyle: ->
     sum = 0
     for x in @state.columns
       sum+=x.width
 
-    { minWidth: "#{sum}px"}
+    {
+      height: "#{@state.heightOfGrid}px"
+      minWidth: "#{sum}px"
+    }
+
+
 
   fireMountedEvent: ->
-    console.log "THIS = ", this
     RailsPowergrid.DynamicCallback(@props.onMounted).call(this)
 
   componentDidMount: ->
@@ -50,6 +54,23 @@ include
     @fireMountedEvent?()
 
     @refreshData()
+
+  componentDidUpdate: ->
+    height = @props.height || 500;
+
+    elm = @getDOMNode()
+    childs = elm.childNodes
+
+    sumHeight = 0
+
+    for c in childs when c.className isnt 'powergrid-data-content-wrapper' #I'm not a big fan about this...
+      sumHeight+=c.offsetHeight
+
+    heightOfGrid = Math.max(30, height-sumHeight)
+
+    if heightOfGrid isnt @state.heightOfGrid
+      @setState heightOfGrid: heightOfGrid
+
 
   updateRow: (data) ->
     for row, idx in @state.data
@@ -142,7 +163,7 @@ include
           @_unselectRow(rowPosition) for rowPosition in @selectedRowIndex
 
           data = JSON.parse(req.responseText)
-          @setFooterText("OK #{data.length}+ rows")
+          @setFooterText("Fetched")
 
           @setState data: data
         error: (req) =>
@@ -150,6 +171,9 @@ include
     0
 
   fetchNextPage: ->
+    return if @fetchingInProgress
+
+    @fetchingInProgress = true
     data = @getPOSTParameters()
     @fetchedPages+=1
 
@@ -164,10 +188,13 @@ include
         method: "POST"
         data: data
         success: (req) =>
+          @fetchingInProgress = false
+
           @state.data = @state.data.concat JSON.parse(req.responseText)
-          @setFooterText("OK #{@state.data.length}+ rows")
+          @setFooterText("Fetched")
           @setState data: @state.data
         error: (req) =>
+          @fetchingInProgress = false
           alert "An error happens processing the data. Please contact software support"
     0
 
@@ -234,7 +261,7 @@ include
         for row, idx in @state.data
           <RailsPowergrid.Row parent=this objectId=row.id key=row.id rowPosition=idx >
             {
-              for column in @state.columns
+              for column in @state.columns  when column.visible
                 <RailsPowergrid.Cell key="#{column.field}" value=row[column.field] objectId=row.id rowPosition=idx opts=column parent=this />
             }
           </RailsPowergrid.Row>
@@ -243,7 +270,6 @@ include
 
   render: ->
     time = Date.now()
-
     result = <div className="powergrid powergrid-clearfix"
       onMouseUp=@handleMouseUp
       onMouseMove=@handleMouseMove
@@ -252,7 +278,7 @@ include
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
       <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
       <RailsPowergrid.HeadersColumn columns=@state.columns parent=this />
-      <div className="powergrid-data-content-wrapper" style=@computeWidth() onScroll=@handleScrolling>
+      <div className="powergrid-data-content-wrapper" style=@getContentWrapperStyle() onScroll=@handleScrolling>
         <div className="powergrid-data-content" onScroll=@handleScrolling>
           {@generateRows()}
         </div>

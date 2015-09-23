@@ -1,6 +1,8 @@
 .powergrid-action-bar {
   min-width: 100%;
   background: #eee;
+  padding: 0.25em;
+  box-sizing: border-box;
 
   .powergrid-action {
     width: 48px;
@@ -10,6 +12,7 @@
     border: solid 1px #aaa;
     text-align: center;
     color: #333;
+    margin-right: 0.5em;
 
     @include background-image(
       linear-gradient(

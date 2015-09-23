@@ -36,6 +36,10 @@ class RailsPowergrid::Grid
       @grid.form = partial
     end
 
+    def height value
+      @grid.height = value
+    end
+
   end
 
   def dsl
@@ -75,7 +79,7 @@ class RailsPowergrid::Grid
     add_column :id, visible: false
   end
 
-  attr_accessor :model, :model_query, :form
+  attr_accessor :model, :model_query, :form, :height
   attr_reader :name
 
   def add_column name, opts={}, &block
@@ -136,19 +140,19 @@ class RailsPowergrid::Grid
   end
 
   def predicator_permit
-    @columns.select(&:is_filterable?).map(&:name)
+    @columns.select(&:filterable?).map(&:name)
   end
 
   def form_permit
-    @columns.select(&:is_in_form?).map(&:name)
+    @columns.select(&:in_form?).map(&:name)
   end
 
   def edit_permit
-    @columns.select(&:is_editable?).map(&:name)
+    @columns.select(&:editable?).map(&:name)
   end
 
   def sort_permit
-    @columns.select(&:is_sortable?).map(&:name)
+    @columns.select(&:sortable?).map(&:name)
   end
 
   def model_scope ctrl
@@ -161,7 +165,7 @@ class RailsPowergrid::Grid
 
   def get_hash model
     @columns.inject({}) do |h, col|
-      h[col.name] = col.get_value(model)
+      h[col.name] = col.get(model)
       h
     end
   end
@@ -172,14 +176,15 @@ class RailsPowergrid::Grid
   end
 
   def to_javascript opts={}
-    props = {}.merge(opts)
-    props[:name] = name
-    props[:columns] = @columns.map(&:to_hash)
-    props[:actions] = @actions
-
+    props = opts.merge({
+      name: name,
+      columns: @columns.map(&:to_hash),
+      actions: @actions,
+      height: height
+    })
 
 out = <<HTML
-  <div id="#{id}"></id>
+  <div id="#{id}"></div>
   <script>
     React.render(React.createElement(RailsPowergrid.Grid, #{props.to_json}), document.getElementById("#{id}"));
   </script>

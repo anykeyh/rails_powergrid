@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  status: MyText
+  ordered_at: 2015-09-23 10:40:10
+  total: 9.99
+
+two:
+  status: MyText
+  ordered_at: 2015-09-23 10:40:10
+  total: 9.99

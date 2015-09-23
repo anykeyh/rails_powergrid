@@ -8,4 +8,11 @@ RailsPowergrid.Footer = React.createClass
     @props.parent.setFooter(this)
 
   render: ->
-    <div className="powergrid-footer">{@state.text}</div>
+    <div className="powergrid-footer">
+      <div className="powergrid-footer-lines">
+        {@props.parent.state.data?.length} lines
+      </div>
+      <div className="powergrid-footer-status">
+        {@state.text}
+      </div>
+    </div>

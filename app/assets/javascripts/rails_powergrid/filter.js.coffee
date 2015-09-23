@@ -54,7 +54,7 @@ RailsPowergrid.FiltersBar = React.createClass
   render: ->
     <div className="powergrid-clearfix powergrid-filter-bar">
       {
-        for x in @props.columns
+        for x in @props.columns when x.visible and x.filterable
           <FilterColumn parent=@props.parent data=x key="#{x.field}" />
       }
     </div>

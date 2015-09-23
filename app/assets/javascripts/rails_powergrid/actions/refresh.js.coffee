@@ -4,4 +4,4 @@ RailsPowergrid.registerAction 'refresh',
   onAction: (grid) ->
     grid.refreshData()
 
-  icon: 'reload'
+  icon: 'refresh'

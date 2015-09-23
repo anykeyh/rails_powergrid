@@ -34,7 +34,7 @@ class RailsPowergrid::GridController < ActionController::Base
   # UPDATE
   def update_field
     param_permits.each do |k,v|
-      @grid.get_column(k).set_value(@resource, v)
+      @grid.get_column(k).set(@resource, v)
     end
 
 
