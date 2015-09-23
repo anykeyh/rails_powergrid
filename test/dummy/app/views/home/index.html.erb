@@ -1,2 +1,3 @@
 <h1>Powergrid</h1>
-<%= RailsPowergrid::grid "author_grid" %>
+<%= RailsPowergrid::grid "authors", onSelectionChange: "selectBooksFromAuthor" %>
+<%= RailsPowergrid::grid "books", onMounted: "onBookLoaded" %>

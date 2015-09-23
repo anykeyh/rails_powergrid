@@ -20,7 +20,7 @@ include
     _register: (name, instance) -> RailsPowergrid.Grid._gridList[name] = instance
 
   getInitialState: ->
-    @selectedRows = []
+    @selectedRowIndex = []
     @rows = {}
 
     @fetchedPages = 0
@@ -34,8 +34,21 @@ include
 
   getName: -> @state.name
 
+  computeWidth: ->
+    sum = 0
+    for x in @state.columns
+      sum+=x.width
+
+    { minWidth: "#{sum}px"}
+
+  fireMountedEvent: ->
+    console.log "THIS = ", this
+    RailsPowergrid.DynamicCallback(@props.onMounted).call(this)
+
   componentDidMount: ->
     RailsPowergrid.Grid._register(@getName(), this)
+    @fireMountedEvent?()
+
     @refreshData()
 
   updateRow: (data) ->
@@ -126,7 +139,7 @@ include
         data: @getPOSTParameters()
         success: (req) =>
           @fetchedPages = 0
-          @_unselectRow(rowPosition) for rowPosition in @selectedRows
+          @_unselectRow(rowPosition) for rowPosition in @selectedRowIndex
 
           data = JSON.parse(req.responseText)
           @setFooterText("OK #{data.length}+ rows")
@@ -191,8 +204,10 @@ include
   getColumns: -> @state.columns
 
   handleKeyPress: (evt) ->
+
     switch evt.key
       when "ArrowDown"
+        evt.preventDefault()
         sel = Math.min(@lastRowPosition+1, @state.data.length-1)
 
         if(evt.shiftKey)
@@ -200,6 +215,7 @@ include
         else
           @setSelection sel
       when "ArrowUp"
+        evt.preventDefault()
         sel = Math.max(@lastRowPosition-1, 0)
         if(evt.shiftKey)
           @selectToRange sel
@@ -236,8 +252,10 @@ include
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
       <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
       <RailsPowergrid.HeadersColumn columns=@state.columns parent=this />
-      <div className="powergrid-data-block" onScroll=@handleScrolling>
-        {@generateRows()}
+      <div className="powergrid-data-content-wrapper" style=@computeWidth() onScroll=@handleScrolling>
+        <div className="powergrid-data-content" onScroll=@handleScrolling>
+          {@generateRows()}
+        </div>
       </div>
       <RailsPowergrid.Footer text="Loading..." parent=this />
     </div>

@@ -62,8 +62,8 @@ module RailsPowergrid
       Sprockets.append_path(images_path)
     end
 
-    def grid name
-      RailsPowergrid::Grid.load(name).to_javascript
+    def grid name, opts={}
+      RailsPowergrid::Grid.load(name).to_javascript(opts)
     end
 
 

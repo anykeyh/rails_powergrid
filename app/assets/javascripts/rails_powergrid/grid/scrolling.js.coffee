@@ -1,6 +1,6 @@
 RailsPowergrid._GridStruct.Scrolling =
   _focusOnLastRowPosition: ->
-    dataBlock = @getDOMNode().querySelector(".powergrid-data-block")
+    dataBlock = @getDOMNode().querySelector(".powergrid-data-content-wrapper")
     height = dataBlock.offsetHeight
     scroll = dataBlock.scrollTop
 

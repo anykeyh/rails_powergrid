@@ -1,20 +1,25 @@
 module Predicator
   class << self
     # Create a substring for this kind of operator: AND/OR
-    def apply_double_operators op, value, opts
-      "(" + value.map{ |v| self.create_predicate(v, opts) }.join(" #{op} ") + ")"
+    def apply_double_operators op, value, grid, opts
+      "(" + value.map{ |v| self.create_predicate(v, grid, opts) }.join(" #{op} ") + ")"
     end
 
     def create_predicate parameters, grid, opts
       permits = grid.predicator_permit
       parameters.map do |k, v|
         if opts[:double_operators][k.to_sym]
-          apply_double_operators(opts[:double_operators][k.to_sym], v, opts)
+          apply_double_operators(opts[:double_operators][k.to_sym], v, grid, opts)
         elsif op=opts[:operators][k.to_sym]
           field, value = v
 
           if permits.include?(v.first.to_sym)
-            col = grid.get_column(field).get_filter(grid.model, op, ActiveRecord::Base::sanitize(value))
+            safeValue = if value.is_a?(Array)
+              value.map{|v| ActiveRecord::Base::sanitize(v) }.join(", ")
+            else
+              ActiveRecord::Base::sanitize(value)
+            end
+            col = grid.get_column(field).get_filter(grid.model, op, safeValue)
           else
             raise "Parameter unpermitted: `#{field}`, authorized = #{opts[:permit].inspect}"
           end

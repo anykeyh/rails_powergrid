@@ -212,15 +212,15 @@ class RailsPowergrid::Column
     else
       col = model.columns.select{|x| x.name.to_sym == name.to_sym}.first
       if col
-        query.order("#{name} #{direction}")
+        query.order("#{model.arel_table.name}.#{name} #{direction}")
       else
         ref = model.reflect_on_association(name)
 
         if ref
           if ref.polymorphic?
-            query.order("#{ref.foreign_type} #{direction}, #{ref.foreign_key} #{direction}")
+            query.order("#{ref.klass.arel_table.name}.#{ref.foreign_type} #{direction}, #{ref.klass.arel_table.name}.#{ref.foreign_key} #{direction}")
           else
-            query.order("#{ref.foreign_key} #{direction}")
+            query.order("#{ref.klass.arel_table.name}.#{ref.foreign_key} #{direction}")
           end
         else
           query #fallback
@@ -266,10 +266,10 @@ class RailsPowergrid::Column
       selected_id = model_instance.send(ref.foreign_key)
 
       if ref
-        arr = ref.klass.select(:id, :name).all.map{|x| [x.id, x.try(:name) || x.to_s, selected_id==x.id]}
+        arr = ref.klass.all.map{|x| [x.id, x.try(:name) || x.to_s, selected_id==x.id]}.sort{|a,b| a[1]<=>b[1]}
 
         if opts[:allow_blank]
-          arr = [["","", !selected_id]]+arr
+          arr = [["","", !selected_id]]
         end
 
         return arr
@@ -306,6 +306,15 @@ class RailsPowergrid::Column
     (@opts[:type] || guess_type)
   end
 
+  # Some options used from React side, in case for editors/renderers
+  def html
+    (@opts[:html] || {})
+  end
+
+  def visible
+    @opts[:visible]
+  end
+
   def to_hash
     {
       field: name,
@@ -317,7 +326,9 @@ class RailsPowergrid::Column
       editor: editor,
       renderer: renderer,
       label: label,
-      type: type
+      html: html,
+      type: type,
+      visible: visible
     }
   end
 

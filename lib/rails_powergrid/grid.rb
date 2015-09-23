@@ -55,7 +55,7 @@ class RailsPowergrid::Grid
   def self.load grid_name
     secured_grid = grid_name.gsub(/[^a-zA-Z\_\/]/, "")
 
-    grid_file = File.join(*secured_grid.split("/").compact) + ".rb"
+    grid_file = File.join(*secured_grid.split("/").compact) + "_grid.rb"
 
     Rails.configuration.rails_powergrid[:grid_path].each do |gp|
       if File.exists?(File.join(gp, grid_file))
@@ -171,11 +171,12 @@ class RailsPowergrid::Grid
     "powergrid_grid_#{name}"
   end
 
-  def to_javascript
-    props = {}
+  def to_javascript opts={}
+    props = {}.merge(opts)
     props[:name] = name
     props[:columns] = @columns.map(&:to_hash)
     props[:actions] = @actions
+
 
 out = <<HTML
   <div id="#{id}"></id>

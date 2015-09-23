@@ -1,22 +1,26 @@
 RailsPowergrid._GridStruct.Selection =
-  getSelection: -> @selectedRows
+  getSelection: -> @selectedRowIndex
 
   getSelectedIds: ->
-    for x in @state.selectedRows
+    for x in @selectedRowIndex
       @state.data[x].id
 
+  getSelectedRows: ->
+    for x in @selectedRowIndex
+      @state.data[x]
+
   fireSelectionChangeEvent: ->
-    @state.onSelectionChange?.call(this, @selectedRows)
+    RailsPowergrid.DynamicCallback(@state.onSelectionChange).call(this, @getSelectedRows())
 
   clearSelection: ->
-    @selectedRows = []
+    @selectedRowIndex = []
     @fireSelectionChangeEvent()
 
   setSelection: (rowPosition) ->
-    if @selectedRows
-      for x in @selectedRows
+    if @selectedRowIndex
+      for x in @selectedRowIndex
         @_unselectRow(x)
-    @selectedRows = [rowPosition]
+    @selectedRowIndex = [rowPosition]
     @_selectRow(rowPosition)
     @lastRowPosition = rowPosition
 
@@ -24,17 +28,17 @@ RailsPowergrid._GridStruct.Selection =
     @_focusOnLastRowPosition()
 
   toggleSelection: (rowPosition, updateState=true) ->
-    @selectedRows ||= []
+    @selectedRowIndex ||= []
 
-    if (idx = @selectedRows.indexOf(rowPosition)) is -1
+    if (idx = @selectedRowIndex.indexOf(rowPosition)) is -1
       @_selectRow(rowPosition)
-      @selectedRows.push rowPosition
+      @selectedRowIndex.push rowPosition
 
       if updateState
         @fireSelectionChangeEvent()
     else
       @_unselectRow(rowPosition)
-      @selectedRows.splice(idx, 1)
+      @selectedRowIndex.splice(idx, 1)
 
       if updateState
         @fireSelectionChangeEvent()
@@ -46,6 +50,8 @@ RailsPowergrid._GridStruct.Selection =
     decal = if rowPosition > @lastRowPosition then 1 else -1
     for x in [@lastRowPosition+decal .. rowPosition]
       @toggleSelection(x, false)
+
+    @fireSelectionChangeEvent()
 
   _selectRow: (rowPosition) ->
     @getRow(rowPosition)?.setState selected: true

@@ -1,3 +1,4 @@
+
 .powergrid-row {
   display: block;
   border-bottom: solid 1px #eee;
@@ -17,8 +18,13 @@
   }
 }
 
-.powergrid-data-block {
+.powergrid-data-content-wrapper {
   position: relative;
   height: 300px;
+  overflow: hidden;
   overflow-y: auto;
+
+  .powergrid-data-content {
+    display: table;
+  }
 }

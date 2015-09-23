@@ -11,6 +11,10 @@
 @import './rails_powergrid/editors/_text';
 @import './rails_powergrid/editors/_select';
 
+.powergrid {
+  outline: none;
+}
+
 .powergrid-clearfix {
   &:after {
     content: "";
