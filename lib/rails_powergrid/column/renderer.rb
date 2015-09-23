@@ -5,7 +5,8 @@ class RailsPowergrid::Column
   MAPPED_RENDERER = {
     boolean: "Boolean",
     number: "Number",
-    datetime: "Datetime"
+    datetime: "Datetime",
+    text: "Text"
   }
 
   add_to_hash do
