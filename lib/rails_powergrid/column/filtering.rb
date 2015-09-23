@@ -26,22 +26,22 @@ class RailsPowergrid::Column
     _exec(opts[:filter], model, operator, value)
   end
 
+  def aggregate?
+    @opts[:aggregate]
+  end
+
+  def aggregate= x
+    @opts[:aggregate] = x
+  end
+
   def _default_filter model, operator, value
     if model.column_names.include?(@name.to_s)
-      if operator == "NULL"
-        "#{model.arel_table.name}.#{@name} IS NULL"
-      else
-        "#{model.arel_table.name}.#{@name} #{operator} (#{value})"
-      end
+      "#{model.arel_table.name}.#{@name} #{operator} (#{value})"
     else
       assoc = model.reflect_on_association(@name)
       if assoc
         if assoc.klass.column_names.include?("name")
-          if operator == "NULL"
-            "#{assoc.klass.arel_table.name}.name IS NULL"
-          else
-            "#{assoc.klass.arel_table.name}.name #{operator} (#{value})"
-          end
+          "#{assoc.klass.arel_table.name}.name #{operator} (#{value})"
         else
           raise "I don't know how to filter #{@name}!"
         end

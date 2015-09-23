@@ -5,6 +5,25 @@ module Predicator
       "(" + value.map{ |v| self.create_predicate(v, grid, opts) }.join(" #{op} ") + ")"
     end
 
+    # optimize the query tree to avoid some parenthesis
+    def optimize_query q
+      out = {}
+      q.map do |k,v|
+        optimize_subquery(v, k, out_parent, out)
+      end
+    end
+
+    def optimize_subquery q, parent_symbol, out
+      q.each do |k,v|
+        if k==parent_symbol
+          return true
+        else
+          out <<
+          return false
+        end
+      end
+    end
+
     def create_predicate parameters, grid, opts
       permits = grid.predicator_permit
       parameters.map do |k, v|
@@ -46,6 +65,73 @@ module Predicator
     }
   }
 
+  TEST = {
+    :or => [
+      :or =>  [
+        eq:{a: 1},
+        eq:{b: 2}
+      ],
+      :and => [
+        eq:{c: 1},
+        eq:{b: 2}
+      ]
+    ]
+  }
+
+
+
+  class SimpleNode
+    attr_accessor :key, :value, :parent, :aggregate
+
+    def initialize parent, hash
+      @aggregate = false
+      @value = hash.values.first
+      @key = hash.keys.first
+    end
+
+    def to_s level=0
+      out = ("  " * level) + "#{@key}: #{value}"
+    end
+  end
+
+  class BinaryNode
+    attr_accessor :key, :parent, :children
+
+    def initialize parent, hash
+      @children = []
+      @parent = parent
+
+      @key = hash.keys.first
+
+      hash.values.first.each do |item|
+        if BINARY_OPS.include?(item.keys.first)
+          @children << BinaryNode.new(self, item)
+        else
+          @children << SimpleNode.new(self, item)
+        end
+      end
+    end
+
+    def to_s level=0
+      out = ("  " * level) + "#{@key}:\n"
+      out += "#{children.map{|c| c.to_s(level+1)}.join("\n")}"
+    end
+
+    # Optimize the predicator request...
+    def optimize
+      @children.each_with_index do |x, idx|
+        if x.is_a?(BinaryNode) && x.key == key
+          @children.delete_at(idx)
+          @children += x.children
+          return optimize
+        end
+      end
+
+      return self
+    end
+  end
+
+
  #TEST = {
  #     :and => [
  #       {:or => [
@@ -61,6 +147,7 @@ module Predicator
  #       {eq: ["test", true]}
  #     ]
  #   }
+
 end
 
 class ActiveRecord::Base

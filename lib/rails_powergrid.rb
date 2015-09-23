@@ -51,7 +51,7 @@ module RailsPowergrid
       require 'rails_powergrid/controller'
       require 'rails_powergrid/railtie'
       require 'rails_powergrid/ext/routing'
-      require 'rails_powergrid/ext/predicator'
+      require 'rails_powergrid/predicator/base'
 
       if Gem::Specification.find_all_by_name('rubyXL').any?
         #Rails.logger.info "RailsPowergrid Module Excel Activated"

@@ -31,4 +31,8 @@ class RailsPowergrid::Column::DSL
     def type value
       @column.type = value
     end
+
+    def aggregate value
+      @column.aggregate = value
+    end
 end
