@@ -1,0 +1,37 @@
+/* USE THIS ONE WITH YOUR OWN IMPLEMENTATION OF STYLE IF U PREFER */
+
+@import 'compass';
+@import 'font-awesome';
+
+@import './rails_powergrid/_actions';
+@import './rails_powergrid/_row';
+@import './rails_powergrid/_cell';
+@import './rails_powergrid/_modal';
+@import './rails_powergrid/_filters';
+@import './rails_powergrid/_footer';
+@import './rails_powergrid/_form';
+
+@import './rails_powergrid/_headers.scss';
+@import './rails_powergrid/editors/_text';
+@import './rails_powergrid/editors/_select';
+
+.powergrid {
+  outline: none;
+  margin: 1em;
+  border: solid 1px #ccc;
+  box-sizing: border-box;
+
+  @include font-style;
+
+  input[type=text], input[type=number], textarea, select {
+    @include input-style;
+  }
+}
+
+.powergrid-clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}

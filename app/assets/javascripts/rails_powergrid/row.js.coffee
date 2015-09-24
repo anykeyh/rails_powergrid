@@ -27,7 +27,7 @@ RailsPowergrid.Row = React.createClass
   render: ->
     selectionClass = if @state.selected then "selected" else ""
 
-    <div className="powergrid-row powergrid-clearfix #{selectionClass}" 
+    <div className="powergrid-row #{selectionClass}" 
       onClick=@selectWithClick >
       {@props.children}
     </div>

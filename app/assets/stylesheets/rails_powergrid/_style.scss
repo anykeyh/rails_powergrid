@@ -1,0 +1,96 @@
+/* VARIABLES AND MIXINS */
+
+$font-weight-regular: 300;
+$font-weight-bolder: 400;
+$font-weight-bold: 500;
+
+$border-light: #E4E4E4;
+$border-regular: #c9c9c9;
+$border-hover: #a8a8a8;
+$border-focus: #52bad5;
+
+$line-odd: lighten(#cae9f0, 8%);
+$line-even: white;
+$line-hover: #cae9f0;
+$line-active: #b0e0ed;
+
+$color: #444;
+$color-stronger: #333;
+$color-strong: #111;
+
+$color-invert: #ddd;
+$color-invert-lighter: #aaa;
+$color-invert-light: #666;
+$background-invert: #333333;
+$background-invert-lighter: #414141;
+
+@mixin color-invert {
+  color: $color-invert;
+  background-color: $background-invert;
+}
+
+@mixin font-style {
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, Helvetica, Verdana, sans-serif;
+  font-size: 17px;
+  font-weight: $font-weight-regular;
+  color: $color;
+}
+
+@mixin input-style {
+  outline: none;
+
+  border: solid 2px $border-regular;
+  border-radius: 3px;
+  font-size: 1.0em;
+  box-sizing: border-box;
+  padding: 0.125em 0.25em;
+
+  &:hover { border: solid 2px $border-hover; }
+  &:focus { border: solid 2px $border-focus; }
+}
+
+@mixin checkbox-style {
+  visibility: hidden;
+  position: relative;
+  cursor: pointer;
+
+  &:before {
+    display: block;
+    visibility: visible;
+    position: absolute;
+
+    left: -0.25em;
+    top: 0.25em;
+    width: 2em;
+    text-align: center;
+    line-height: 0;
+    font-size: 2em;
+
+    content: '▢';
+  }
+
+  &:checked{
+    &:before {
+      content: '▣';
+      color: darken(green, 15%);
+    }
+  }
+}
+
+/* The element can interact with mouse and/or keyboard */
+@mixin interactive {
+  color: $color;
+  cursor: pointer;
+  &:hover { color: $color-stronger; }
+  &:focus { color: $color-strong; }
+}
+
+/* The element has the look and feel of a button */
+@mixin like-a-button {
+  text-align: center;
+
+  @include interactive;
+  background-color: rgba(246,246,246,1);
+  &:hover { background-color: rgba(240,240,240,1); }
+  &:active { background-color:  rgba(237,237,237,1); }
+}

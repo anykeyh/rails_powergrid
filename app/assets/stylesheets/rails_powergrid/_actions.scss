@@ -1,43 +1,57 @@
 .powergrid-action-bar {
   min-width: 100%;
-  background: #eee;
-  padding: 0.25em;
+  padding: 0;
   box-sizing: border-box;
 
+  @include color-invert;
+
   .powergrid-action {
-    width: 48px;
-    height: 48px;
+
+    transition: color ease-in-out 0.3s;
+    transition: background-color ease-in-out 0.3s;
+
+
+    padding: 0.25em;
+
     display: inline-block;
     cursor: pointer;
-    border: solid 1px #aaa;
+
     text-align: center;
-    color: #333;
+
+    color: transparent;
+
     margin-right: 0.5em;
 
-    @include background-image(
-      linear-gradient(
-        top,
-        rgba(255,255,255,1) 0%, 
-        rgba(246,246,246,1) 47%, 
-        rgba(237,237,237,1) 100%)
-    );
-
     i.fa {
+      transition: color ease-in-out 0.3s;
+      color: $color-invert-lighter;
+
       width: 100%;
       margin-top: 4px;
 
-      font-size: 24px;
+      font-size: 1.8em;
       text-align: center;
     }
-
     span {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      font-size: 12px;
+      font-size: 1.0em;
     }
 
     &.disabled {
-      color: #999;
+      i.fa { color: $color-invert-light !important; }
+
+      &:hover {
+        color: $color-invert-light;
+        background-color: transparent;
+      }
+
       cursor: default;
     }
+
+    &:hover {
+      color: $color-invert;
+      i.fa { color: $color-invert; }
+      background-color: $background-invert-lighter;
+    }
+
   }
 }

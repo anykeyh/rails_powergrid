@@ -7,21 +7,12 @@
       box-sizing: border-box;
 
       &:first-child{
-        border-right: solid 1px #ccc;
+        border-right: solid 1px $background-invert-lighter;
       }
     }
-    /*@include background-image(
-      linear-gradient(
-        top,
-        rgba(255,255,255,1) 0%,
-        rgba(246,246,246,1) 47%,
-        rgba(237,237,237,1) 100%)
-    );*/
+    @include color-invert;
 
-    background-color: rgba(246,246,246,1);
+    border-top: solid 1px $background-invert-lighter;
 
-    font-size: small;
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    border-top: solid 1px #ccc;
     @include clearfix();
 }

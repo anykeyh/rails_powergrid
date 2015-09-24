@@ -3,6 +3,7 @@
 }
 
 .powergrid-header-column {
+  @include like-a-button;
 
   display: inline-block;
   position: relative;
@@ -13,52 +14,18 @@
   border-bottom: solid 1px #aaa;
   border-right: solid 1px #aaa;
 
-  &:first-child {
-    border-left: solid 1px #aaa;
-  }
-
   cursor: pointer;
 
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-
-  font-weight: 400;
+  font-weight: $font-weight-bolder;
 
   font-size: 1.0em;
   color: #333;
 
   @include user-select(none);
-  @include filter-gradient(#ffffff, #ededed, vertical);
-  @include background-image(
-    linear-gradient(
-      top,
-      rgba(255,255,255,1) 0%, 
-      rgba(246,246,246,1) 47%, 
-      rgba(237,237,237,1) 100%)
-  );
+
 
   box-sizing: border-box;
   padding: 0.125em 0.5em;
-
-
-  &:hover {
-    @include background-image(
-      linear-gradient(
-        top,
-        rgba(255,255,255,1) 0%, 
-        rgba(240,240,240,1) 47%, 
-        rgba(220,220,220,1) 100%)
-    );
-  }
-
-  &:active {
-    @include background-image(
-      linear-gradient(
-        top,
-        rgba(255,255,255,1) 0%, 
-        rgba(237,237,237,1) 47%, 
-        rgba(210,210,210,1) 100%)
-    );
-  }
 }
 .powergrid-header-resizer {
   position: absolute;

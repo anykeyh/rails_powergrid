@@ -1,14 +1,23 @@
 form.powergrid-form {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-
   padding: 1em;
+
+  input[type=text], input[type=number], textarea, select {
+    @include input-style;
+
+    width: 100%;
+  }
+
+  input[type=checkbox] {
+    @include checkbox-style;
+  }
+
 
   .powergrid-form-content {
     padding: 1em;
   }
 
   fieldset {
-
+    border: solid 1px $border-light;
   }
 
   hr {
@@ -36,20 +45,15 @@ form.powergrid-form {
       width: 20%;
       text-align: left;
       label { cursor: pointer; }
+
+      color: #666;
+      font-style: italic;
     }
 
     .powergrid-form-field {
       box-sizing: border-box;
       display: inline-block;
       width: 75%;
-
-      input, textarea, select {
-        box-sizing: border-box;
-        width: 100%;
-        border-radius: 5px;
-        font-size: 1.25em;
-        border: solid 1px #ccc;
-      }
     }
 
 

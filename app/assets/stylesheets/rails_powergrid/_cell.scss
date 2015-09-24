@@ -4,19 +4,16 @@
   display:inline-block;
 
   box-sizing: border-box;
-  border-right: solid 1px #eee;
+  border-right: solid 1px $border-regular;
   min-height: 26px;
   text-align: left;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
 
   overflow: hidden;
   cursor: default;
 
-  position: relative;
+  margin-bottom: -4px; //Fix a problem with the inline-block display?
 
-  &:first-child {
-    border-left: solid 1px #eee;
-  }
+  position: relative; //For renderers
 }
 
 .powergrid-text-renderer {

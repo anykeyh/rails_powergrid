@@ -10,7 +10,7 @@
       <% fieldsets = @permitted_columns.map{|c| @grid.get_column(c)}.group_by(&:fieldset) %>
       <% fieldsets.each do |fieldset, sub_columns| %>
         <fieldset>
-          <legend><%= fieldset || "General" %></legend>
+          <legend><%= fieldset %></legend>
           <% sub_columns.each do |column| %>
             <div class="powergrid-form-field with-check">
 

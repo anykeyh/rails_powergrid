@@ -4,17 +4,20 @@
   border-bottom: solid 1px #eee;
   white-space: nowrap;
   cursor: default;
+  background-color: $line-even;
+
+  transition: background-color ease-in-out 0.1s;
 
   &:nth-child(odd) {
-    background-color: #f0f8ff;
+    background-color: $line-odd;
   }
 
   &:hover {
-    background-color: darken(#f0f8ff, 5%);
+    background-color: $line-hover;
   }
 
   &.selected {
-    background-color: #a0d8ff
+    background-color: $line-active;
   }
 }
 
