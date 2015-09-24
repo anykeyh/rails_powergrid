@@ -28,14 +28,14 @@ module RailsPowergrid
       require File.join gem_path, "lib", "rails_powergrid", file
     end
 
-    def setup_autoload!
-      %w(app/helpers).each do |dir|
-        path = File.join(File.expand_path('../..', __FILE__), dir )
-        $LOAD_PATH << path
-        ActiveSupport::Dependencies.autoload_paths << path
-        ActiveSupport::Dependencies.autoload_once_paths.delete(path)
-      end
-    end
+    #def setup_autoload!
+    #  %w(app/helpers app/views).each do |dir|
+    #    path = File.join(File.expand_path('../..', __FILE__), dir )
+    #    $LOAD_PATH << path
+    #    ActiveSupport::Dependencies.autoload_paths << path
+    #    ActiveSupport::Dependencies.autoload_once_paths.delete(path)
+    #  end
+    #end
 
     def load!
       require 'react-rails'
@@ -57,8 +57,6 @@ module RailsPowergrid
         #Rails.logger.info "RailsPowergrid Module Excel Activated"
         require 'rails_powergrid/excel'
       end
-
-      setup_autoload!
 
       Sprockets.append_path(stylesheets_path)
       Sprockets.append_path(fonts_path)

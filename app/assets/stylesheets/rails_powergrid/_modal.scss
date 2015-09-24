@@ -11,7 +11,6 @@
     position: absolute;
 
     width: 80%;
-    height: 80%;
     top: 10%;
     left: 10%;
 
@@ -19,7 +18,7 @@
     border: solid 1px #ddd;
     box-shadow: 0px 2px 2px #666;
 
-    overflow: hidden;
+    overflow: auto;
     background-color: white;
 
     .powergrid-modal-title {
@@ -29,7 +28,12 @@
       font-size: 1.25em;
       font-weight: bold;
       color: #666;
+    }
 
+    .powergrid-modal-content {
+      max-height: 500px; //For older browsers?
+      max-height: 70vh;
+      overflow: auto;
     }
   }
 }

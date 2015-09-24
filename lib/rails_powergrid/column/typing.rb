@@ -20,9 +20,9 @@ class RailsPowergrid::Column
         return ActiveRecord::Base::sanitize(value.to_i!=0)
       end
     when :number
-      ActiveRecord::Base::sanitize(value.to_i)
+      value.to_i
     when :float
-      ActiveRecord::Base::sanitize(value.to_f)
+      value.to_f
     else
       ActiveRecord::Base::sanitize(value)
     end
@@ -33,7 +33,7 @@ class RailsPowergrid::Column
   end
 
   def type=type
-    @opts[:type] = type.to_s.capitalize
+    @opts[:type] = type
   end
 
   def _guess_type

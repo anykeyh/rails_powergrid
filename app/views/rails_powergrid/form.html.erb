@@ -1,0 +1,39 @@
+<%
+  def encode_id *args
+    args.map{|x| x.to_s.underscore.gsub(/[^A-Za-z0-9_-]/, "_")}.join("_")
+  end
+%>
+<div>
+  <form class="powergrid-form" enctype="application/json" action="<%= powergrid_path %>" method="PATCH">
+    <input type=hidden name="resource[ids]" value="<%= @ids %>"/>
+      <div class="powergrid-form-content">
+      <% fieldsets = @permitted_columns.map{|c| @grid.get_column(c)}.group_by(&:fieldset) %>
+      <% fieldsets.each do |fieldset, sub_columns| %>
+        <fieldset>
+          <legend><%= fieldset || "General" %></legend>
+          <% sub_columns.each do |column| %>
+            <div class="powergrid-form-field with-check">
+
+              <% checked = @values_hash[column.name].nil? ? "" : "checked='checked'" %>
+              <div class="powergrid-form-check">
+                <input class="" name="resource[<%= column.name %>][active]" type="checkbox" value="1" <%=checked%> />
+              </div>
+
+              <div class="powergrid-form-label">
+                <label for="<%= encode_id 'resource', column.name %>"><%= column.label %></label>
+              </div>
+
+              <div class="powergrid-form-field">
+                <input type="text" name="resource[<%= column.name %>][value]" id="<%= encode_id 'resource', column.name %>" value="<%=  @values_hash[column.name] %>" placeholder="<%= column.placeholder %>" />
+              </div>
+
+            </div>
+          <% end #sub_columns %>
+        </fieldset>
+      <% end #fieldset %>
+    </div>
+    <hr />
+    <button type="submit">Submit</button>
+    <button type="submit">Close</button>
+  </form>
+</div>

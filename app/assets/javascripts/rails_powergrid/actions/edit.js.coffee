@@ -1,16 +1,15 @@
 RailsPowergrid.registerAction 'edit',
   label: "Edit"
   application: '1+'
+
+  handleFormLoaded: (ajaxFormHTML) ->
+    ids = ajaxFormHTML.getDOMNode().querySelectorAll("form input[name='ids']")
+    ids?.value = ajaxFormHTML.props.ids
+
   onAction: (grid) ->
-    selection = grid.getSelection()
-    columns = grid.getColumns()
-    console.log(selection)
-    console.log(columns)
-
-
     RailsPowergrid.Modal.show(
       <RailsPowergrid.Modal title="Edit">
-        <RailsPowergrid.AjaxFormHTML url="/" />
+        <RailsPowergrid.AjaxFormHTML url=grid.getCtrlPath("edit") ajaxData={ids: grid.getSelectedIds()} onLoaded=@handleFormLoaded />
       </RailsPowergrid.Modal>
     )
 

@@ -2,7 +2,10 @@ class RailsPowergrid::GridController < ActionController::Base
   layout false
 
   before_filter :load_grid
-  before_filter :load_resource, except: [:index, :destroy]
+  before_filter :load_resource, except: [:index, :destroy, :edit, :new]
+
+  helper_method :powergrid_path
+
   def prepare_collection_query
     filter = params[:f] || {}
     @query = @grid.prepare_query(self).predicator(filter, @grid)
@@ -31,7 +34,39 @@ class RailsPowergrid::GridController < ActionController::Base
     render :json => @resource
   end
 
-  # UPDATE
+  # UPDATE MULTIPLE MODELS
+  def edit
+    @ids = params[:ids]
+    @resources = @grid.prepare_query(self).where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + params[:ids] )
+
+    @permitted_columns = @grid.form_permit
+
+
+    #Combinate the resources
+    fields = @resources.map do |r|
+      @grid.get_hash(r)
+    end.map do |h|
+      h.select{|k,v| @permitted_columns.include?(k) }
+    end
+
+    #Set the default value:
+    @values_hash = fields.inject({}) do |h, col|
+      col.each do |k,v|
+        if h.has_key?(k) && h[k] != v
+          h[k] = nil #No default value, because multiple values
+        else
+          h[k] = v
+        end
+
+      end
+
+      h
+    end
+
+    render @grid.form
+  end
+
+  # UPDATE ONE OR MORE FIELD TO ONE MODEL
   def update_field
     param_permits.each do |k,v|
       @grid.get_column(k).set(@resource, v)
@@ -64,7 +99,14 @@ class RailsPowergrid::GridController < ActionController::Base
     render :json => { status: "OK" }
   end
 
+protected
+
+  def powergrid_path
+    Rails.application.routes.url_helpers.powergrid_path(grid: @grid.name)
+  end
+
 private
+
 
   def fix_order_and_limit_offset
     field_by, direction = params[:ob], params[:od]

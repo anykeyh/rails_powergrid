@@ -1,10 +1,24 @@
 class ActionDispatch::Routing::Mapper
-  def rails_powergrid
-    post "grids/:grid" => "rails_powergrid/grid#index"
-    delete "grids/:grid" => "rails_powergrid/grid#destroy"
-    post "grids/:grid/create" => "rails_powergrid/grid#create"
-    post "grids/:grid/:id" => "rails_powergrid/grid#read"
-    post "grids/:grid/:id/update_field" => "rails_powergrid/grid#update_field"
-    post "grids/:grid/:id/:field/options" => "rails_powergrid/grid#options_field"
+  module RailsPowergrid
+    DEFAULT_OPTIONS = {
+      controller: "RailsPowergrid::GridController"
+    }
+
+  end
+
+  def rails_powergrid opts={}
+    opts = RailsPowergrid::DEFAULT_OPTIONS.merge(opts)
+
+    ctrl = opts[:controller].to_s.underscore.gsub(/_controller$/, "")
+
+    post "grids/:grid" => "#{ctrl}#index", as: "powergrid"
+    delete "grids/:grid" => "#{ctrl}#destroy"
+    post "grids/:grid/create" => "#{ctrl}#create"
+    post "grids/:grid/edit" => "#{ctrl}#edit"
+    match "grids/:grid" => "#{ctrl}#update", via: [:put, :patch]
+
+    post "grids/:grid/:id" => "#{ctrl}#read"
+    post "grids/:grid/:id/update_field" => "#{ctrl}#update_field"
+    post "grids/:grid/:id/:field/options" => "#{ctrl}#options_field"
   end
 end

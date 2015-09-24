@@ -19,7 +19,7 @@ end
 
 column :isbn_number
 column :author_id, visible: false
-column :price, renderer: [ :money, currency: "€", decimal: 2 ]
+column :price, renderer: [ :money, currency: "€", decimal: 2 ], type: :number
 #column :published_at
 
 default_actions

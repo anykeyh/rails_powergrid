@@ -8,6 +8,10 @@ class RailsPowergrid::Grid
 
     self.opts_default_actions = [:new, :edit, :delete, :audit]
 
+    def ctrl_path path
+      @grid.ctrl_path = path
+    end
+
     def initialize grid
       @grid = grid
     end
@@ -75,12 +79,13 @@ class RailsPowergrid::Grid
     @form = "rails_powergrid/form"
     @columns = []
     @actions = []
+    @ctrl_path = Rails.application.routes.url_helpers.powergrid_path(grid: @name)
 
-    add_column :id, visible: false
+    add_column :id, visible: false, editable: false, sortable: false, in_form: false
   end
 
   attr_accessor :model, :model_query, :form, :height
-  attr_reader :name
+  attr_reader :name, :ctrl_path
 
   def add_column name, opts={}, &block
     @columns << RailsPowergrid::Column.new(self, name, opts, &block)
@@ -163,7 +168,7 @@ class RailsPowergrid::Grid
     end
   end
 
-  def get_hash model
+def get_hash model
     @columns.inject({}) do |h, col|
       h[col.name] = col.get(model)
       h
@@ -180,6 +185,7 @@ class RailsPowergrid::Grid
       name: name,
       columns: @columns.map(&:to_hash),
       actions: @actions,
+      ctrlPath: @ctrl_path,
       height: height
     })
 

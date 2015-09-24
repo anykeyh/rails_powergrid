@@ -14,7 +14,7 @@ include(RailsPowergrid._GridStruct.Selection)
 
 include
   statics:
-    REQUEST_LIMIT: 30
+    REQUEST_LIMIT: 100
     _gridList: {}
     get: (name) -> RailsPowergrid.Grid._gridList[name]
     _register: (name, instance) -> RailsPowergrid.Grid._gridList[name] = instance
@@ -90,8 +90,6 @@ include
   setFilter: (key, operator, value) ->
     [oldKey, oldOperator] = @state.filters[key] if @state.filters[key]?
 
-    console.log "SET ", key, operator, value
-
     if operator is "null"
       @state.filters[key] = [operator, 1]
     else if value? and value isnt ""
@@ -124,12 +122,15 @@ include
     else
       currentCustomizedFilters
 
+  getCtrlPath: (x="") ->
+    @state.ctrlPath + "/" + x
+
   updateField: (objectId, fieldName, value) ->
     data = {}
     data[fieldName] = value ? ""
 
     @setFooterText("Update field...")
-    RailsPowergrid.ajax "/grids/#{@state.name}/#{objectId}/update_field",
+    RailsPowergrid.ajax "#{@getCtrlPath()}/#{objectId}/update_field",
       method: "POST"
       data: { resource: data }
       success: (req) =>
@@ -155,7 +156,7 @@ include
     # We timeout the refresh because sometimes there's setState before
     # and it won't allow the data to be updated otherwise.
     window.setTimeout =>
-      RailsPowergrid.ajax "/grids/#{@state.name}",
+      RailsPowergrid.ajax "#{@getCtrlPath()}",
         method: "POST"
         data: @getPOSTParameters()
         success: (req) =>
@@ -177,14 +178,12 @@ include
     data = @getPOSTParameters()
     @fetchedPages+=1
 
-    console.log @fetchedPages
-
     data.o = @fetchedPages*RailsPowergrid.Grid.REQUEST_LIMIT
 
     @setFooterText("Fetching...")
 
     window.setTimeout =>
-      RailsPowergrid.ajax "/grids/#{@state.name}",
+      RailsPowergrid.ajax "#{@getCtrlPath()}",
         method: "POST"
         data: data
         success: (req) =>

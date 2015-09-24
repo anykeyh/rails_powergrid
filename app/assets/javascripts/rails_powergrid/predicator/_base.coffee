@@ -22,17 +22,17 @@ RailsPowergrid.where = (condition, variables...) ->
     predicates = condition
 
   result.where = (condition, variables...) ->
-    return RailsPowergrid.Predicator(
+    return RailsPowergrid.where(
       "and": [
         result.predicates
-        (new RailsPowergrid.Predicator(condition, variables).predicates)
+        (RailsPowergrid.where(condition, variables).predicates)
       ])
 
   result.or_where = (condition, variables...) ->
-    return RailsPowergrid.Predicator(
+    return RailsPowergrid.where(
       "or": [
         result.predicates,
-        (new RailsPowergrid.Predicator(condition, variables).predicates)
+        (RailsPowergrid.where(condition, variables).predicates)
       ])
 
   result.predicates = predicates
