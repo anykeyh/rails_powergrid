@@ -22,12 +22,16 @@ createFieldsForForm = (obj, prefix, form) ->
 
       createFieldsForForm(v, "#{prefix}#{key}", form)
 
+###
+  Actually, it's not so easy to download a file with pure AJAX.
+  In this case, I use a virtual form to download the file...
+###
 RailsPowergrid.registerAction 'excel',
   label: "Excel"
   application: '*'
   onAction: (grid) ->
     form = document.createElement("form")
-    form.action = "/grids/#{grid.getName()}.xlsx"
+    form.action = "#{grid.getCtrlPath()}.xlsx"
     form.method = "POST"
 
     # Weird bug here: doesn't wanna works on chrome... meh...

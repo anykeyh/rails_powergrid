@@ -5,8 +5,9 @@
   white-space: nowrap;
   cursor: default;
   background-color: $line-even;
+  font-size: 0.9em;
 
-  transition: background-color ease-in-out 0.1s;
+  //transition: background-color ease-in-out 0.1s;
 
   &:nth-child(odd) {
     background-color: $line-odd;

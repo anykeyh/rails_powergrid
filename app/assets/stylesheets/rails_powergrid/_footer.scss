@@ -3,7 +3,7 @@
     &>div {
       float: left;
       width: 50%;
-      padding: 0.25em;
+      padding: 0.25em 0.5em;
       box-sizing: border-box;
 
       &:first-child{
@@ -11,8 +11,10 @@
       }
     }
     @include color-invert;
+    @include clearfix;
 
     border-top: solid 1px $background-invert-lighter;
+    font-size: 0.8em;
+    font-weight: $font-weight-bold;
 
-    @include clearfix();
 }

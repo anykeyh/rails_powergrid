@@ -1,6 +1,7 @@
 class RailsPowergrid::Column
-  default_for :fieldset, ""
-  default_for :placeholder, ""
+  default_for :fieldset, nil
+  default_for :placeholder, nil
+  default_for :hint, nil
 
   add_to_hash do
     {
@@ -17,6 +18,14 @@ class RailsPowergrid::Column
     @opts[:in_form] = x
   end
 
+  def hint
+    @opts[:hint]
+  end
+
+  def hint=x
+    @opts[:hint] = x
+  end
+
   def fieldset
     @opts[:fieldset]
   end
@@ -26,7 +35,7 @@ class RailsPowergrid::Column
   end
 
   def placeholder
-    @opts[:placeholder]
+    @opts[:placeholder] || label
   end
 
   def placeholder=x

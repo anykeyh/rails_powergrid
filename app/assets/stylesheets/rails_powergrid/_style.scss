@@ -1,8 +1,10 @@
 /* VARIABLES AND MIXINS */
 
+$font-weight-thin: 200;
+$font-weight-thiner: 200;
 $font-weight-regular: 300;
 $font-weight-bolder: 400;
-$font-weight-bold: 500;
+$font-weight-bold: 600;
 
 $border-light: #E4E4E4;
 $border-regular: #c9c9c9;
@@ -14,6 +16,8 @@ $line-even: white;
 $line-hover: #cae9f0;
 $line-active: #b0e0ed;
 
+$color-light: #bbb;
+$color-lighter: #666;
 $color: #444;
 $color-stronger: #333;
 $color-strong: #111;
@@ -21,6 +25,8 @@ $color-strong: #111;
 $color-invert: #ddd;
 $color-invert-lighter: #aaa;
 $color-invert-light: #666;
+
+$background-light: #f2f2f2;
 $background-invert: #333333;
 $background-invert-lighter: #414141;
 
@@ -50,31 +56,7 @@ $background-invert-lighter: #414141;
 }
 
 @mixin checkbox-style {
-  visibility: hidden;
-  position: relative;
-  cursor: pointer;
 
-  &:before {
-    display: block;
-    visibility: visible;
-    position: absolute;
-
-    left: -0.25em;
-    top: 0.25em;
-    width: 2em;
-    text-align: center;
-    line-height: 0;
-    font-size: 2em;
-
-    content: '▢';
-  }
-
-  &:checked{
-    &:before {
-      content: '▣';
-      color: darken(green, 15%);
-    }
-  }
 }
 
 /* The element can interact with mouse and/or keyboard */
@@ -88,6 +70,8 @@ $background-invert-lighter: #414141;
 /* The element has the look and feel of a button */
 @mixin like-a-button {
   text-align: center;
+  font-size: 0.9em;
+  font-weight: $font-weight-bold;
 
   @include interactive;
   background-color: rgba(246,246,246,1);

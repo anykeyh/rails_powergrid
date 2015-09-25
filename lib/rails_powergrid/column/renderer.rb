@@ -19,7 +19,7 @@ class RailsPowergrid::Column
   end
 
   def label
-    @opts[:label] || @name.try(:to_s).try(:capitalize)
+    @opts[:label] || @name.try(:to_s).try(:humanize)
   end
 
   def label= x

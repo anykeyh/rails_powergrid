@@ -4,28 +4,34 @@
 
 .powergrid-filter {
   display:inline-block;
+  margin-bottom: -5px; //Fix inline-block
   position: relative;
 
   .powergrid-operation{
     @include user-select(none);
+    @include like-a-button;
 
-    width: 20px;
+    font-size: 1em;
+
+    width: 1em;
     &.noparam { width: 100%; }
 
     padding: 0.25em;
+    margin-bottom: -1px;
     float: left;
     box-sizing: border-box;
 
-    @include like-a-button;
   }
 
   .powergrid-filter-block {
-    width: calc(100% - 20px);
+    width: calc(100% - 1em);
     float: left;
   }
 
   input {
     width: 100%;
     box-sizing: border-box;
+    border-bottom: none !important;
+    border-radius: 0 !important;
   }
 }

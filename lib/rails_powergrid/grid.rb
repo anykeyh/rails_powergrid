@@ -6,7 +6,7 @@ class RailsPowergrid::Grid
       attr_accessor :opts_default_actions
     end
 
-    self.opts_default_actions = [:new, :edit, :delete, :audit]
+    self.opts_default_actions = [:new, :edit, :delete, :filter, :audit]
 
     def ctrl_path path
       @grid.ctrl_path = path

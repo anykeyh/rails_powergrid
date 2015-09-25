@@ -4,13 +4,15 @@
   end
 %>
 <div>
-  <form class="powergrid-form" enctype="application/json" action="<%= powergrid_path %>" method="PATCH">
+  <form id="powergrid-form-edit" class="powergrid-form" enctype="application/json" action="<%= powergrid_path %>" method="PATCH">
     <input type=hidden name="resource[ids]" value="<%= @ids %>"/>
       <div class="powergrid-form-content">
       <% fieldsets = @permitted_columns.map{|c| @grid.get_column(c)}.group_by(&:fieldset) %>
       <% fieldsets.each do |fieldset, sub_columns| %>
         <fieldset>
+          <% if fieldset && !fieldset.empty? %>
           <legend><%= fieldset %></legend>
+          <% end %>
           <% sub_columns.each do |column| %>
             <div class="powergrid-form-field with-check">
 
@@ -21,6 +23,9 @@
 
               <div class="powergrid-form-label">
                 <label for="<%= encode_id 'resource', column.name %>"><%= column.label %></label>
+                <% if column.hint %>
+                  <div class="hint"><%= column.hint %></div>
+                <% end %>
               </div>
 
               <div class="powergrid-form-field">
@@ -33,7 +38,12 @@
       <% end #fieldset %>
     </div>
     <hr />
-    <button type="submit">Submit</button>
-    <button type="submit">Close</button>
+    <div class="powergrid-modal-buttons powergrid-clearfix">
+      <button type="submit" class="pull-right">Submit</button>
+      <button class="pull-right"><i class="fa fa-times">&nbsp;</i>Close</button>
+    </div>
+    <script>
+      RailsPowergrid.prepareForm("edit", document.getElementById("powergrid-form-edit"))
+    </script>
   </form>
 </div>

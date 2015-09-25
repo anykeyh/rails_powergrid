@@ -9,13 +9,17 @@
   height: 100vh;
   z-index: 20001;
   background-color: rgba(0,0,0,0.8);
+  text-align: center;
 
   .powergrid-modal {
-    position: absolute;
+    position: relative;
+    display: inline-block;
 
-    width: 80%;
-    top: 10%;
-    left: 10%;
+    max-width: 80%;
+    margin: auto;
+
+    top: 20%;
+    max-height: 70%;
 
     border-radius: 5px;
     border: solid 1px #ddd;
@@ -25,7 +29,7 @@
     background-color: white;
 
     .powergrid-modal-title {
-      background-color: #f2f2f2;
+      background-color: $background-light;
       text-align: center;
       padding: 0.75em 0em;
       font-size: 1.15em;
@@ -37,6 +41,10 @@
       max-height: 500px; //For older browsers?
       max-height: 70vh;
       overflow: auto;
+    }
+
+    .powergrid-modal-buttons {
+      text-align: right;
     }
   }
 }

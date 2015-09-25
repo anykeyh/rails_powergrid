@@ -16,13 +16,12 @@
 
   cursor: pointer;
 
-  font-weight: $font-weight-bolder;
+  font-weight: $font-weight-bold;
 
   font-size: 1.0em;
   color: #333;
 
   @include user-select(none);
-
 
   box-sizing: border-box;
   padding: 0.125em 0.5em;
