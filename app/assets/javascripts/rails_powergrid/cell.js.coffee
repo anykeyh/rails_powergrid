@@ -9,9 +9,7 @@ RailsPowergrid.Cell = React.createClass
     }
 
   handleDoubleClick: (evt) ->
-    console.log "DOUBLE CLIK?!", @props.opts
     if @props.opts.editable
-      console.log "EDITABLE !"
       @setState editMode: true
 
   handleBlur: (evt) ->
@@ -23,15 +21,17 @@ RailsPowergrid.Cell = React.createClass
       @props.parent.updateField(@props.objectId, @props.opts.field, value)
 
   render: ->
-    <div className="powergrid-cell" style=@computeStyle()
+    <div className="powergrid-cell"
       onDoubleClick=@handleDoubleClick
       onBlur=@handleBlur >
-      {
-        if @state.editMode
-          _editor = RailsPowergrid.Editors[@props.opts.editor]
-          <_editor parent=@props.parent objectId=@props.objectId cell=this opts=@props.opts value=@props.value onUpdate=@handleEditionFinished />
-        else
-          _renderer = RailsPowergrid.Renderers[@props.opts.renderer]
-          <_renderer parent=@props.parent objectId=@props.objectId cell=this opts=@props.opts value=@props.value />
-      }
+      <div className="powergrid-cell-content"  style=@computeStyle()>
+        {
+          if @state.editMode
+            _editor = RailsPowergrid.Editors[@props.opts.editor]
+            <_editor parent=@props.parent objectId=@props.objectId cell=this opts=@props.opts value=@props.value onUpdate=@handleEditionFinished />
+          else
+            _renderer = RailsPowergrid.Renderers[@props.opts.renderer]
+            <_renderer parent=@props.parent objectId=@props.objectId cell=this opts=@props.opts value=@props.value />
+        }
+      </div>
     </div>

@@ -1,3 +1,72 @@
+.powergrid-btn {
+
+  display: inline-block;
+
+  &:first-child {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  margin-left: 0.8em;
+  margin-right: 0.8em;
+
+  padding: 0.5em 1em;
+  cursor: pointer;
+  border-radius: 0.25em;
+
+  font-size: 1em;
+
+  outline: none;
+
+  border: solid 1px $border-light;
+  background-color: $border-regular;
+
+  &:hover { background-color: $border-hover; }
+
+  &:active { background-color: $border-focus; }
+
+  font-weight: $font-weight-bold;
+  color: $color;
+
+
+  &.powergrid-success {
+    background-color: $background-success-light;
+    border: solid 1px $background-success;
+    color: $color-success;
+
+    &:hover {
+      background-color: $background-success;
+      border: solid 1px $background-success-stronger;
+    }
+
+    &:active {
+      background-color: $background-success-stronger;
+      border: solid 1px $background-success-strong;
+    }
+  }
+
+
+  &.powergrid-danger {
+    background-color: $background-danger-light;
+    border: solid 1px $background-danger;
+    color: $color-danger;
+
+    &:hover {
+      background-color: $background-danger;
+      border: solid 1px $background-danger-stronger;
+    }
+
+    &:active {
+      background-color: $background-danger-stronger;
+      border: solid 1px $background-danger-strong;
+    }
+  }
+
+
+
+}
+
+
 form.powergrid-form {
   padding: 1em;
 
@@ -33,26 +102,6 @@ form.powergrid-form {
     width: 100%;
     box-sizing: border-box;
     padding: 0
-  }
-
-  a.btn, button, input[type=submit] {
-    padding: 0.5em 1em;
-    cursor: pointer;
-    border-radius: 0.25em;
-
-    font-size: 1em;
-
-    outline: none;
-
-    border: solid 1px $border-light;
-    background-color: $border-regular;
-
-    &:hover { background-color: $border-hover; }
-
-    &:active { background-color: $border-focus; }
-
-    font-weight: $font-weight-bold;
-    color: $color;
   }
 
   hr {

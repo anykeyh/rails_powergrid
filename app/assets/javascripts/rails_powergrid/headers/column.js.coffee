@@ -7,7 +7,14 @@ HeaderColumn = React.createClass
   computeStyle: -> { width: "#{@state.width}px" }
 
   handleClick: (evt) ->
-    return if @inResizing
+    if @inResizing
+      @inResizing = false
+      return
+
+    evt.stopPropagation()
+    evt.preventDefault()
+
+    console.log "click?"
 
     if @props.data.sortable
       parent = @props.parent
@@ -33,6 +40,7 @@ HeaderColumn = React.createClass
         "▼"
     else
       ""
+
   handleResizing: (evt) ->
     evt.stopPropagation()
     evt.preventDefault()
@@ -50,17 +58,17 @@ HeaderColumn = React.createClass
       finish: (evt) =>
         info = @props.parent.getColumnInfo(@props.data.field)
         info.width = @state.width
-        @inResizing = no
         @props.parent.forceUpdate()
+        @inResizing = false
     }
 
   render: ->
-    <div className="powergrid-header-column" style=@computeStyle() title=@props.data.label >
-      <div className="powergrid-header-content" onClick=@handleClick>
+    <div className="powergrid-header-column" style=@computeStyle() title=@props.data.label onMouseUp=@handleClick>
+      <div className="powergrid-header-content">
         {@props.data.label}
-        <div className="powergrid-header-direction">{@getDirectionSymbol()}</div>
       </div>
 
+      <div className="powergrid-header-direction">{@getDirectionSymbol()}</div>
       <div className="powergrid-header-resizer" onMouseDown=@handleResizing></div>
     </div>
 

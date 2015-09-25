@@ -1,5 +1,6 @@
 .powergrid-header {
   white-space: nowrap;
+  border-bottom: solid 1px $border-light;
 }
 
 .powergrid-header-column {
@@ -10,9 +11,8 @@
   //float: left;
   text-align: center;
 
-  border-top: solid 1px #aaa;
-  border-bottom: solid 1px #aaa;
-  border-right: solid 1px #aaa;
+  border-top: solid 1px $border-hover;
+  border-right: solid 1px $border-hover;
 
   cursor: pointer;
 
@@ -24,7 +24,7 @@
   @include user-select(none);
 
   box-sizing: border-box;
-  padding: 0.125em 0.5em;
+  padding: 0.2em 0.5em;
 }
 .powergrid-header-resizer {
   position: absolute;
@@ -40,9 +40,10 @@
 .powergrid-header-direction {
   font-size: 0.66em;
   position: absolute;
-  right: 2px;
-  top: 50%;
-  line-height: 0;
+  right: 0;
+  top: 0;
+  line-height: 2.5em;
+  width: 2em;
   color: #666;
 }
 

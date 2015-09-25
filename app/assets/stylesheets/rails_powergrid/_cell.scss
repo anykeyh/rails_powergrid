@@ -3,8 +3,10 @@
 
   display:inline-block;
 
-  box-sizing: border-box;
-  border-right: solid 1px $border-regular;
+  display: table-cell;
+
+  vertical-align: middle;
+
   min-height: 26px;
   text-align: left;
 
@@ -14,6 +16,17 @@
   margin-bottom: -4px; //Fix a problem with the inline-block display?
 
   position: relative; //For renderers
+
+  .powergrid-cell-content {
+    box-sizing: border-box;
+    border-right: dotted 1px $border-regular;
+
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
 }
 
 .powergrid-text-renderer {

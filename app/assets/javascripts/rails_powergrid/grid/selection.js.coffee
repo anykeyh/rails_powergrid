@@ -10,7 +10,6 @@ RailsPowergrid._GridStruct.Selection =
       @state.data[x]
 
   fireSelectionChangeEvent: ->
-    console.log "FORCE UPDATE?"
     @actionBar.forceUpdate()
     RailsPowergrid.DynamicCallback(@state.onSelectionChange).call(this, @getSelectedRows())
 

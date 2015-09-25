@@ -51,6 +51,10 @@ include
 
   componentDidMount: ->
     RailsPowergrid.Grid._register(@getName(), this)
+
+    for evtName in ['mousewheel', 'DOMMouseScroll']
+      @getDOMNode().querySelector(".powergrid-data-content-wrapper").addEventListener(evtName, ( (evt) => @preventDefaultScrolling(evt) ), false)
+
     @fireMountedEvent?()
 
     @refreshData()
@@ -232,6 +236,19 @@ include
 
   getColumns: -> @state.columns
 
+  preventDefaultScrolling: (evt) ->
+    target = evt.currentTarget
+
+    windowHeight  = target.offsetHeight
+    currentScroll = target.scrollTop
+    childHeight   = target.childNodes[0].offsetHeight
+    delta         = evt.wheelDelta
+
+    #So the page is not scrolling anymore when the mouse is on the grid
+    if (delta<0 && (currentScroll >= childHeight - windowHeight)) or ( delta>0 && currentScroll <= 0)
+      evt.preventDefault()
+      evt.stopPropagation()
+
   handleKeyPress: (evt) ->
 
     switch evt.key
@@ -256,6 +273,8 @@ include
 
   setFooterText: (value) ->
     @footer.setState text: value
+
+
 
   generateRows: ->
     do =>

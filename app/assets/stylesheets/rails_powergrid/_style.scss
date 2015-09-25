@@ -1,5 +1,8 @@
 /* VARIABLES AND MIXINS */
 
+$font-family: 'Open Sans', 'Helvetica Neue', Arial, Helvetica, Verdana, sans-serif;
+$font-initial-size: 17px;
+
 $font-weight-thin: 200;
 $font-weight-thiner: 200;
 $font-weight-regular: 300;
@@ -22,9 +25,22 @@ $color: #444;
 $color-stronger: #333;
 $color-strong: #111;
 
+
 $color-invert: #ddd;
 $color-invert-lighter: #aaa;
 $color-invert-light: #666;
+
+$background-success-light: #D0FBA2;
+$background-success: #B9E08E;
+$background-success-stronger: #A6C584;
+$background-success-strong: #9BB57E;
+$color-success: #56614B;
+
+$background-danger-light: #FFBD95;
+$background-danger: #E4A782;
+$background-danger-stronger: #DE956A;
+$background-danger-strong: #B59E7B;
+$color-danger: #8A4E20;
 
 $background-light: #f2f2f2;
 $background-invert: #333333;
@@ -36,8 +52,8 @@ $background-invert-lighter: #414141;
 }
 
 @mixin font-style {
-  font-family: 'Open Sans', 'Helvetica Neue', Arial, Helvetica, Verdana, sans-serif;
-  font-size: 17px;
+  font-family: $font-family;
+  font-size: $font-initial-size;
   font-weight: $font-weight-regular;
   color: $color;
 }
@@ -61,6 +77,7 @@ $background-invert-lighter: #414141;
 
 /* The element can interact with mouse and/or keyboard */
 @mixin interactive {
+  transition: color ease-in-out 0.1s;
   color: $color;
   cursor: pointer;
   &:hover { color: $color-stronger; }
@@ -69,11 +86,14 @@ $background-invert-lighter: #414141;
 
 /* The element has the look and feel of a button */
 @mixin like-a-button {
+  @include interactive;
+
   text-align: center;
   font-size: 0.9em;
   font-weight: $font-weight-bold;
 
-  @include interactive;
+  transition-property: background-color, color;
+
   background-color: rgba(246,246,246,1);
   &:hover { background-color: rgba(240,240,240,1); }
   &:active { background-color:  rgba(237,237,237,1); }

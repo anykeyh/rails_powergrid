@@ -18,21 +18,23 @@ RailsPowergrid.AjaxFormHTML = React.createClass
     scripts = @getDOMNode().getElementsByTagName('script')
     eval(s.innerHTML) for s in scripts
 
-  componentDidUpdate: ->
-    @evalScriptMarkups()
+  componentDidUpdate: -> @evalScriptMarkups()
 
   render: ->
     <div dangerouslySetInnerHTML={__html: @state.html}>
     </div>
 
 RailsPowergrid.prepareForm = (action, formElement, grid) ->
-  window.formElement = formElement
 
   for input in formElement.querySelectorAll("input")
     if id=input.getAttribute("data-check")
       do(id) ->
         input.onchange = ->
           formElement.querySelector("##{id}").checked = true
+
+  for elm in formElement.querySelectorAll("[data-behavior='close']")
+    elm.onclick = ->
+      RailsPowergrid.Modal.close()
 
   formElement.onsubmit = (evt) ->
     evt.preventDefault()

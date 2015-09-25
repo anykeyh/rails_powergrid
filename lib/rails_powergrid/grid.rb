@@ -36,12 +36,12 @@ class RailsPowergrid::Grid
       self.class.opts_default_actions.each{ |s| action(s) }
     end
 
-    def form partial
-      @grid.form = partial
-    end
-
     def height value
       @grid.height = value
+    end
+
+    def form x
+      @grid.form = x
     end
 
   end
@@ -76,7 +76,6 @@ class RailsPowergrid::Grid
 
   def initialize name
     @name = name
-    @form = "rails_powergrid/form"
     @columns = []
     @actions = []
     @ctrl_path = Rails.application.routes.url_helpers.powergrid_path(grid: @name)
@@ -84,7 +83,7 @@ class RailsPowergrid::Grid
     add_column :id, visible: false, editable: false, sortable: false, in_form: false
   end
 
-  attr_accessor :model, :model_query, :form, :height
+  attr_accessor :model, :model_query, :height, :form
   attr_reader :name, :ctrl_path
 
   def add_column name, opts={}, &block

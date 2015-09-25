@@ -2,9 +2,11 @@
   def encode_id *args
     args.map{|x| x.to_s.underscore.gsub(/[^A-Za-z0-9_-]/, "_")}.join("_")
   end
+
+  action = action_name
 %>
 <div>
-  <form id="powergrid-form-edit" class="powergrid-form" enctype="application/json" action="<%= powergrid_path %>" method="PUT" enctype="application/json">
+  <form id="powergrid-form-<%=action%>" class="powergrid-form" enctype="application/json" action="<%= powergrid_path %>" method="PUT">
     <input type=hidden name="ids" value="<%= @ids.join(",") %>"/>
       <div class="powergrid-form-content">
       <% fieldsets = @permitted_columns.map{|c| @grid.get_column(c)}.group_by(&:fieldset) %>
@@ -39,11 +41,11 @@
     </div>
     <hr />
     <div class="powergrid-modal-buttons powergrid-clearfix">
-      <button type="submit" class="pull-right">Submit</button>
-      <button class="pull-right"><i class="fa fa-times">&nbsp;</i>Close</button>
+      <button type="submit" class="pull-right powergrid-btn powergrid-success"><i class="fa fa-check fa-fw">&nbsp;</i>Submit</button>
+      <button type="button" data-behavior="close" class="pull-right powergrid-btn powergrid-danger"><i class="fa fa-times fa-fw">&nbsp;</i>Close</button>
     </div>
   </form>
 </div>
 <script type="text/javascript">
-  RailsPowergrid.prepareForm("edit", document.getElementById("powergrid-form-edit"), RailsPowergrid.Grid.get("<%=@grid.name%>") );
+  RailsPowergrid.prepareForm("<%=action%>", document.getElementById("powergrid-form-<%=action%>"), RailsPowergrid.Grid.get("<%=@grid.name%>") );
 </script>

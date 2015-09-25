@@ -2,7 +2,7 @@ class RailsPowergrid::GridController < ActionController::Base
   layout false
 
   before_filter :load_grid
-  before_filter :load_resource, only: %i(read update_field option_field)
+  before_filter :load_resource, only: %i(read update_field options_field)
 
   helper_method :powergrid_path
 
@@ -21,7 +21,9 @@ class RailsPowergrid::GridController < ActionController::Base
   end
 
   def new
-    render @grid.form
+    @permitted_columns = @grid.form_permit
+
+    render "#{@grid.form}/new"
   end
 
   # CREATE
@@ -62,8 +64,9 @@ class RailsPowergrid::GridController < ActionController::Base
       h
     end
 
-    render @grid.form
+    render "#{@grid.form}/edit"
   end
+
 
   # UPDATE MULTIPLE MODELS
   def update
@@ -113,7 +116,7 @@ class RailsPowergrid::GridController < ActionController::Base
   def options_field
     col = @grid.get_column(params[:field])
     if col
-      render :json => col.options_for(@resource)
+      render :json => col.get_opts_for_select(@resource)
     else
       render :json => { status: "NOTFOUND" }, status: 404
     end
