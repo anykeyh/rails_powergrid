@@ -4,6 +4,7 @@ class RailsPowergrid::Column
 
   add_to_hash do
     {
+      editable: editable?,
       editor: editor,
       editor_opts: editor_opts
     }

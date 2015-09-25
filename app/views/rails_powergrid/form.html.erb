@@ -4,8 +4,8 @@
   end
 %>
 <div>
-  <form id="powergrid-form-edit" class="powergrid-form" enctype="application/json" action="<%= powergrid_path %>" method="PATCH">
-    <input type=hidden name="resource[ids]" value="<%= @ids %>"/>
+  <form id="powergrid-form-edit" class="powergrid-form" enctype="application/json" action="<%= powergrid_path %>" method="PUT" enctype="application/json">
+    <input type=hidden name="ids" value="<%= @ids.join(",") %>"/>
       <div class="powergrid-form-content">
       <% fieldsets = @permitted_columns.map{|c| @grid.get_column(c)}.group_by(&:fieldset) %>
       <% fieldsets.each do |fieldset, sub_columns| %>
@@ -18,7 +18,7 @@
 
               <% checked = @values_hash[column.name].nil? ? "" : "checked='checked'" %>
               <div class="powergrid-form-check">
-                <input class="" name="resource[<%= column.name %>][active]" type="checkbox" value="1" <%=checked%> />
+                <input class="" id="<%= encode_id 'resource', column.name, 'active' %>" name="resource[<%= column.name %>][active]" type="checkbox" value="1" <%=checked%> />
               </div>
 
               <div class="powergrid-form-label">
@@ -29,7 +29,7 @@
               </div>
 
               <div class="powergrid-form-field">
-                <input type="text" name="resource[<%= column.name %>][value]" id="<%= encode_id 'resource', column.name %>" value="<%=  @values_hash[column.name] %>" placeholder="<%= column.placeholder %>" />
+                <input type="text" name="resource[<%= column.name %>][value]" id="<%= encode_id 'resource', column.name, 'value' %>" value="<%=  @values_hash[column.name] %>" placeholder="<%= column.placeholder %>" data-check="<%= encode_id 'resource', column.name, 'active' %>" />
               </div>
 
             </div>
@@ -42,8 +42,8 @@
       <button type="submit" class="pull-right">Submit</button>
       <button class="pull-right"><i class="fa fa-times">&nbsp;</i>Close</button>
     </div>
-    <script>
-      RailsPowergrid.prepareForm("edit", document.getElementById("powergrid-form-edit"))
-    </script>
   </form>
 </div>
+<script type="text/javascript">
+  RailsPowergrid.prepareForm("edit", document.getElementById("powergrid-form-edit"), RailsPowergrid.Grid.get("<%=@grid.name%>") );
+</script>

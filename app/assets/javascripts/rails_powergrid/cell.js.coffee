@@ -9,7 +9,9 @@ RailsPowergrid.Cell = React.createClass
     }
 
   handleDoubleClick: (evt) ->
-    if @props.opts.isEditable
+    console.log "DOUBLE CLIK?!", @props.opts
+    if @props.opts.editable
+      console.log "EDITABLE !"
       @setState editMode: true
 
   handleBlur: (evt) ->

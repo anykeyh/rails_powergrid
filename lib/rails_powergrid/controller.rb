@@ -2,7 +2,7 @@ class RailsPowergrid::GridController < ActionController::Base
   layout false
 
   before_filter :load_grid
-  before_filter :load_resource, except: [:index, :destroy, :edit, :new]
+  before_filter :load_resource, only: %i(read update_field option_field)
 
   helper_method :powergrid_path
 
@@ -34,13 +34,12 @@ class RailsPowergrid::GridController < ActionController::Base
     render :json => @resource
   end
 
-  # UPDATE MULTIPLE MODELS
+  # SHOW MULTIPLE MODELS EDIT FORM
   def edit
-    @ids = params[:ids]
+    @ids = params[:ids].map(&:to_i)
     @resources = @grid.prepare_query(self).where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + params[:ids] )
 
     @permitted_columns = @grid.form_permit
-
 
     #Combinate the resources
     fields = @resources.map do |r|
@@ -66,6 +65,35 @@ class RailsPowergrid::GridController < ActionController::Base
     render @grid.form
   end
 
+  # UPDATE MULTIPLE MODELS
+  def update
+    @ids = params[:ids].split(",").map(&:to_i)
+    @resources = @grid.prepare_query(self).where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + @ids)
+
+    permitted_columns = @grid.form_permit.map(&:to_sym)
+
+    puts "resource = #{params[:resource].inspect}"
+
+    params_permitted = Hash[
+      params["resource"].select do |column_name,value|
+        permitted_columns.include?(column_name.to_sym) && value["active"]
+      end.map{|k,v| [k, v["value"]]}
+    ]
+
+    puts "params_permitted: #{params_permitted.inspect}"
+
+    @resources.each do |resource|
+      params_permitted.each do |k,v|
+        @grid.get_column(k).set(resource, v)
+      end
+
+      resource.save!
+    end
+
+    render :json => { status: "OK" }
+  end
+
+
   # UPDATE ONE OR MORE FIELD TO ONE MODEL
   def update_field
     param_permits.each do |k,v|
@@ -79,6 +107,7 @@ class RailsPowergrid::GridController < ActionController::Base
       render :json => {status: "FAIL"}, status: 501
     end
   end
+
 
   #Get option list for some fields
   def options_field

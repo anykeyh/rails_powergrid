@@ -80,12 +80,15 @@ include
         return;
 
   setDefaultFilter: (x, opts...) ->
-    if typeof(x) is "string"
-      @setState defaultFilter: RailsPowergrid.where.apply( null, [x].concat(opts) ).predicates
+    value = if typeof(x) is "string"
+      RailsPowergrid.where.apply( null, [x].concat(opts) ).predicates
     else
-      @setState defaultFilter: x
+      x
 
-    @refreshData()
+    #Optimizing to avoid some useless requests
+    unless RailsPowergrid.deepEqual(value, @state.defaultFilter)
+      @setState defaultFilter: value
+      @refreshData()
 
   setFilter: (key, operator, value) ->
     [oldKey, oldOperator] = @state.filters[key] if @state.filters[key]?

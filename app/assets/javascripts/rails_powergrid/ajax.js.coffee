@@ -25,9 +25,7 @@ flattenParameters = (obj, prefix, output) ->
   output
 
 RailsPowergrid.ajax = (url, opts) ->
-  opts.error ?= ->
-    console.log req.responseText
-    alert "An error happens processing the data. Please contact software support"
+  opts.error ?= RailsPowergrid.ajaxError
 
   req = new XMLHttpRequest()
 
@@ -38,19 +36,24 @@ RailsPowergrid.ajax = (url, opts) ->
       else
         opts.error?(req, evt)
 
-  url = if opts.data? and 'GET' is opts.method.toUpperCase()
-    [opts.url, encodeForm(opts.data)].join("?")
-  else
-    opts.url
+  if opts.data? and 'GET' is opts.method.toUpperCase()
+    url = [opts.url, encodeForm(opts.data)].join("?")
 
-    req.open(opts.method, url, true)
+  req.open(opts.method, url, true)
 
-    if opts.headers
-      for k,v of opts.headers
-        req.setRequestHeader(k, v)
+  if opts.headers
+    for k,v of opts.headers
+      req.setRequestHeader(k, v)
 
-    if ['POST', 'PUT', 'PATCH', 'DELETE'].indexOf(opts.method.toUpperCase()) isnt -1
+  if ['POST', 'PUT', 'PATCH', 'DELETE'].indexOf(opts.method.toUpperCase()) isnt -1
+    if opts.data instanceof FormData
+      req.send(opts.data)
+    else
       req.setRequestHeader("Content-Type", "application/json") unless opts.headers?["Content-Type"]?
       req.send(JSON.stringify(opts.data))
-    else
-      req.send(null)
+  else
+    req.send(null)
+
+RailsPowergrid.ajaxError = (resp) ->
+  console.error resp.responseText
+  alert "An error happens processing the data. Please contact software support"
