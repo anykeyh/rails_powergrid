@@ -7,11 +7,11 @@ require "rails_powergrid/version"
 Gem::Specification.new do |s|
   s.name        = "rails_powergrid"
   s.version     = RailsPowergrid::VERSION
-  s.authors     = [""]
+  s.authors     = ["Yacine Petitprez"]
   s.email       = ["yacine@redtonic.net"]
-  s.homepage    = "TODO"
-  s.summary     = "TODO: Summary of RailsPowergrid."
-  s.description = "TODO: Description of RailsPowergrid."
+  s.homepage    = "https://github.com/anykeyh/rails_powergrid"
+  s.summary     = "Summary coming soon."
+  s.description = "Description coming soon"
   s.license     = "MIT"
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
