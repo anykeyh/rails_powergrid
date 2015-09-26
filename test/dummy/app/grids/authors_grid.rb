@@ -4,7 +4,7 @@ model Author do |query|
   .group(:author_id)
 end
 
-column :first_name, label: "First name", hint: "You can let it empty", fieldset: "Common"
+column :first_name, label: "First name", hint: "You can let it empty", fieldset: "Common", filterable: false
 column :last_name, label: "Last name", hint: "Last name of the author", fieldset: "Common"
 
 column :book_num, editable: false, label: "Number of books" do
