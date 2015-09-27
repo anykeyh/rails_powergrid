@@ -294,14 +294,15 @@ include
     time = Date.now()
     result = <div className="powergrid powergrid-clearfix"
       onMouseUp=@handleMouseUp
-      onMouseMove=@handleMouseMove
-      onKeyDown=@handleKeyPress
-      tabIndex=0>
+      onMouseMove=@handleMouseMove>
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
       <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
       <RailsPowergrid.HeadersColumn columns=@state.columns parent=this />
-      <div className="powergrid-data-content-wrapper" style=@getContentWrapperStyle() onScroll=@handleScrolling>
-        <div className="powergrid-data-content" onScroll=@handleScrolling>
+      <div className="powergrid-data-content-wrapper" style=@getContentWrapperStyle()
+        onScroll=@handleScrolling
+        onKeyDown=@handleKeyPress
+        tabIndex=0 >
+        <div className="powergrid-data-content" >
           {@generateRows()}
         </div>
       </div>
