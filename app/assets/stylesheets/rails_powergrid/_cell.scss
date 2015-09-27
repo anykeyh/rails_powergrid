@@ -50,3 +50,9 @@
   white-space: nowrap;
   overflow: hidden;
 }
+
+.powergrid-field-empty {
+  color: $color-light;
+  text-align: center;
+  font-weight: $font-weight-thiner;
+}

@@ -137,6 +137,11 @@ protected
     Rails.application.routes.url_helpers.powergrid_path(grid: @grid.name)
   end
 
+  def no_pagination
+    params.delete(:l)
+    params.delete(:o)
+  end
+
 private
 
 

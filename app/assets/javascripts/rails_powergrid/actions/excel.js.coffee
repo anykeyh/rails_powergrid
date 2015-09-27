@@ -31,7 +31,7 @@ RailsPowergrid.registerAction 'excel',
   application: '*'
   onAction: (grid) ->
     form = document.createElement("form")
-    form.action = "#{grid.getCtrlPath()}.xlsx"
+    form.action = "#{grid.getCtrlPath(".xlsx", false)}"
     form.method = "POST"
 
     # Weird bug here: doesn't wanna works on chrome... meh...
@@ -40,6 +40,8 @@ RailsPowergrid.registerAction 'excel',
 
     createFieldsForForm(grid.getPOSTParameters(), "", form)
 
+    document.body.appendChild(form)
     form.submit()
+    document.body.removeChild(form)
 
   icon: 'file-excel-o'

@@ -129,8 +129,11 @@ include
     else
       currentCustomizedFilters
 
-  getCtrlPath: (x="") ->
-    @state.ctrlPath + "/" + x
+  getCtrlPath: (x="", addSlash=true) ->
+    if addSlash
+      @state.ctrlPath + "/" + x
+    else
+      @state.ctrlPath + x
 
   updateField: (objectId, fieldName, value) ->
     data = {}
@@ -197,9 +200,12 @@ include
         success: (req) =>
           @fetchingInProgress = false
 
-          @state.data = @state.data.concat JSON.parse(req.responseText)
+          newData = JSON.parse(req.responseText)
           @setFooterText("Fetched")
-          @setState data: @state.data
+          if newData.length isnt 0
+            @state.data = @state.data.concat newData
+            @setState data: @state.data
+
         error: (req) =>
           @fetchingInProgress = false
           alert "An error happens processing the data. Please contact software support"
@@ -298,13 +304,12 @@ include
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
       <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
       <RailsPowergrid.HeadersColumn columns=@state.columns parent=this />
-      <div className="powergrid-data-content-wrapper" style=@getContentWrapperStyle()
-        onScroll=@handleScrolling
-        onKeyDown=@handleKeyPress
-        tabIndex=0 >
-        <div className="powergrid-data-content" >
-          {@generateRows()}
-        </div>
+      <div className="powergrid-data-content-wrapper"
+      style=@getContentWrapperStyle()
+      onScroll=@handleScrolling
+      onKeyDown=@handleKeyPress
+      tabIndex=0 >
+        <div className="powergrid-data-content" > {@generateRows()} </div>
       </div>
       <RailsPowergrid.Footer text="Loading..." parent=this />
     </div>

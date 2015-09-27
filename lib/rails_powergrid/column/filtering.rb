@@ -51,7 +51,7 @@ class RailsPowergrid::Column
     end
 
     if type==:datetime && defined?(RailsPowergrid::SmartDate)
-      RailsPowergrid::SmartDate.generate_sql(model, operator, value)
+      RailsPowergrid::SmartDate.generate_sql(field, operator, value)
     else
       "#{field} #{operator} #{value}"
     end

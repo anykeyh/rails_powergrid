@@ -13,7 +13,7 @@ module RailsPowergrid::SmartDate
       case operator
       when "="
         "#{field} >= #{start_date} AND #{field} < #{end_date}"
-      when "!="
+      when "<>"
         "#{field} < #{start_date} OR #{field} >= #{end_date}"
       when ">"
         "#{field} >= #{end_date}"
@@ -35,7 +35,8 @@ module RailsPowergrid::SmartDate
         if real_date.nil?
           ActiveRecord::Base::sanitize(false) #`False` filter?
         else
-          operation field, operator, real_date.begin.to_formatted_s(:db), real_date.end.to_formatted_s(:db)
+          operation field, operator, ActiveRecord::Base::sanitize(real_date.begin),
+            ActiveRecord::Base::sanitize(real_date.end)
         end
       else
         "#{field} #{operator} #{value}"

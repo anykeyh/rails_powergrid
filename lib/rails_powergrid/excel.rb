@@ -4,6 +4,7 @@ class RailsPowergrid::GridController < ActionController::Base
   alias __index_old index
   def index
     if params[:format] == "xlsx"
+      no_pagination
       index_excel
     else
       __index_old
