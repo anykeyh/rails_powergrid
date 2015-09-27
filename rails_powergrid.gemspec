@@ -30,4 +30,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "binding_of_caller", ">= 0.7"
   s.add_development_dependency "faker"
   s.add_development_dependency "rubyXL", ">= 0.7"
+  s.add_development_dependency "chronic", "~> 0.10"
 end

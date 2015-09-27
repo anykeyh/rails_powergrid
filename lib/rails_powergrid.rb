@@ -58,6 +58,10 @@ module RailsPowergrid
         require 'rails_powergrid/excel'
       end
 
+      if Gem::Specification.find_all_by_name('chronic').any?
+        require 'rails_powergrid/smart_date/smart_date'
+      end
+
       Sprockets.append_path(stylesheets_path)
       Sprockets.append_path(fonts_path)
       Sprockets.append_path(javascripts_path)

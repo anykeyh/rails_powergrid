@@ -167,7 +167,7 @@ class RailsPowergrid::Grid
     end
   end
 
-def get_hash model
+  def get_hash model
     @columns.inject({}) do |h, col|
       h[col.name] = col.get(model)
       h

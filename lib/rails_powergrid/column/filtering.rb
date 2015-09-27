@@ -36,18 +36,25 @@ class RailsPowergrid::Column
 
   def _default_filter model, operator, value
     if model.column_names.include?(@name.to_s)
-      "#{model.arel_table.name}.#{@name} #{operator} (#{value})"
+      field = "#{model.arel_table.name}.#{@name}"
     else
       assoc = model.reflect_on_association(@name)
       if assoc
         if assoc.klass.column_names.include?("name")
-          "#{assoc.klass.arel_table.name}.name #{operator} (#{value})"
+          field = "#{assoc.klass.arel_table.name}.name"
         else
-          raise "I don't know how to filter #{@name}!"
+          raise "I don't know how to filter `#{@name}`. Please set a filter callback or put filterable to false"
         end
       else
-        raise "I don't know how to filter #{@name}!"
+        raise "I don't know how to filter `#{@name}`. Please set a filter callback or put filterable to false"
       end
     end
+
+    if type==:datetime
+      
+    else
+      
+    end
+
   end
 end

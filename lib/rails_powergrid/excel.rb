@@ -1,4 +1,5 @@
 require 'rubyXL'
+
 class RailsPowergrid::GridController < ActionController::Base
   alias __index_old index
   def index
