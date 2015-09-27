@@ -16,7 +16,7 @@ module RailsPowergrid::SmartDate
       when "!="
         "#{field} < #{start_date} OR #{field} >= #{end_date}"
       when ">"
-        "#{field} > #{end_date}"
+        "#{field} >= #{end_date}"
       when "<"
         "#{field} < #{start_date}"
       when ">="
@@ -28,16 +28,15 @@ module RailsPowergrid::SmartDate
       end
     end
 
-    def generate_sql field, value, operator
+    def generate_sql field, operator, value
       if value!="NULL" && value!="NOT NULL"
         real_date = Chronic.parse(value, guess: false)
 
         if real_date.nil?
-          "0" #`False` filter?
+          ActiveRecord::Base::sanitize(false) #`False` filter?
         else
-          operation field, operator, real_date.begin, real_date.end
+          operation field, operator, real_date.begin.to_formatted_s(:db), real_date.end.to_formatted_s(:db)
         end
-
       else
         "#{field} #{operator} #{value}"
       end
