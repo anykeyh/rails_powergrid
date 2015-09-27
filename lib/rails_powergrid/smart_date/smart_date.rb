@@ -5,6 +5,7 @@
 # Loaded only if chronic is added to the gemlist.
 #
 #
+require 'chronic'
 module RailsPowergrid::SmartDate
   class << self
     # Return the sql to filter for this period.
@@ -34,7 +35,7 @@ module RailsPowergrid::SmartDate
         if real_date.nil?
           "0" #`False` filter?
         else
-          operation field, operator, real_date.start, real_date.end
+          operation field, operator, real_date.begin, real_date.end
         end
 
       else

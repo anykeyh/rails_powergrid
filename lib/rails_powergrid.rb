@@ -59,6 +59,7 @@ module RailsPowergrid
       end
 
       if Gem::Specification.find_all_by_name('chronic').any?
+        puts "LOAD CHRONIC"
         require 'rails_powergrid/smart_date/smart_date'
       end
 
