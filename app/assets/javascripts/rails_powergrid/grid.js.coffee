@@ -175,7 +175,8 @@ include
 
           @setState data: data
         error: (req) =>
-          alert "An error happens processing the data. Please contact software support"
+          console.error req.response
+
     0
 
   fetchNextPage: ->
