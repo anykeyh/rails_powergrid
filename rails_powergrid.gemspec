@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency "coffee-rails", "~> 4"
   s.add_dependency "sprockets-coffee-react", "~> 2"
   s.add_dependency "sass-rails", "~> 5"
-  s.add_dependency "compass-rails", "~> 2"
+  s.add_dependency "compass-rails", ">= 2, < 3"
   s.add_dependency "font-awesome-rails", "~> 4"
 
   s.add_development_dependency "sqlite3"
