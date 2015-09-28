@@ -17,5 +17,7 @@ RailsPowergrid._GridStruct.Scrolling =
     scroll = evt.target.scrollTop + evt.target.offsetHeight
     height = evt.target.scrollHeight
 
+    c.checkVisibility(evt.target.scrollTop, scroll) for k,c of @rowChunks
+
     if scroll>=height-250
       @fetchNextPage()

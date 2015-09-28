@@ -22,6 +22,7 @@ include
   getInitialState: ->
     @selectedRowIndex = []
     @rows = {}
+    @rowChunks = {}
 
     @fetchedPages = 0
 
@@ -226,6 +227,11 @@ include
 
     data
 
+  registerRowChunk: (rc) ->
+    @rowChunks[rc.props.reactKey] = rc
+  unregisterRowChunk: (rc) ->
+    delete @rowChunks[rc.props.reactKey]
+
   registerRow: (row) ->
     @registerRowByPosition(row, row.props.rowPosition)
 
@@ -281,18 +287,31 @@ include
   setFooterText: (value) ->
     @footer.setState text: value
 
-
-
   generateRows: ->
     do =>
       if @state.data
-        for row, idx in @state.data
-          <RailsPowergrid.Row parent=this objectId=row.id key=row.id rowPosition=idx >
-            {
-              for column in @state.columns  when column.visible
-                <RailsPowergrid.Cell key="#{column.field}" value=row[column.field] objectId=row.id rowPosition=idx opts=column parent=this />
-            }
-          </RailsPowergrid.Row>
+        # We need to cut in chunk to optimize
+        # the rendering process in chrome (it's already working well in firefox btw...)
+        length = @state.data.length
+        length = Math.ceil(length/31) #One block every 31
+        # Note: Each chunk should be a ODD number of items,
+        # to avoid some issues with the rendering of the rows
+
+        for chunk in [0 ... length]
+          <RailsPowergrid.RowChunk key="chunk#{chunk}" reactKey="chunk#{chunk}" parent=this >
+          {
+            for idx in [chunk*30 ... (chunk+1) * 30 ]
+              row = @state.data[idx]
+              break unless row
+
+              <RailsPowergrid.Row parent=this objectId=row.id key=row.id rowPosition=idx >
+                {
+                  for column in @state.columns  when column.visible
+                    <RailsPowergrid.Cell key="#{column.field}" value=row[column.field] objectId=row.id rowPosition=idx opts=column parent=this />
+                }
+              </RailsPowergrid.Row>
+          }
+          </RailsPowergrid.RowChunk>
       else
         []
 
