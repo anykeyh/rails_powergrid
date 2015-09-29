@@ -25,6 +25,9 @@
   height: 300px;
   overflow: hidden;
   overflow-y: auto;
+  outline: none;
+
+  //&:active { border:solid 1px black; }
 
   .powergrid-data-content {
     display: table;

@@ -1,6 +1,15 @@
 class RailsPowergrid::Column
   default_for :getter, _call_of(:_default_get)
   default_for :setter, _call_of(:_default_set)
+  default_for :default_value, nil
+
+  def default_value
+    @opts[:default_value]
+  end
+
+  def default_value= x
+    @opts[:default_value] = x
+  end
 
   def getter= cb
     @opts[:getter] = cb

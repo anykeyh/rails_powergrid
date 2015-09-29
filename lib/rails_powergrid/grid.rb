@@ -79,6 +79,7 @@ class RailsPowergrid::Grid
     @columns = []
     @actions = []
     @ctrl_path = Rails.application.routes.url_helpers.powergrid_path(grid: @name)
+    @form = "rails_powergrid/grid"
 
     add_column :id, visible: false, editable: false, sortable: false, in_form: false
   end

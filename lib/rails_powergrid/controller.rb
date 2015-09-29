@@ -1,6 +1,7 @@
 class RailsPowergrid::GridController < ActionController::Base
   layout false
 
+  before_filter :set_default_json
   before_filter :load_grid
   before_filter :load_resource, only: %i(read update_field options_field)
 
@@ -143,7 +144,9 @@ protected
   end
 
 private
-
+  def set_default_json
+    params[:format] ||= :json
+  end
 
   def fix_order_and_limit_offset
     field_by, direction = params[:ob], params[:od]

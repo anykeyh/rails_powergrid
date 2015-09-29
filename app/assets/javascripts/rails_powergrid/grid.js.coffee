@@ -293,7 +293,7 @@ include
         # We need to cut in chunk to optimize
         # the rendering process in chrome (it's already working well in firefox btw...)
         length = @state.data.length
-        length = Math.ceil(length/31) #One block every 31
+        length = Math.ceil(length/21) #One block every 21 items
         # Note: Each chunk should be a ODD number of items,
         # to avoid some issues with the rendering of the rows
 

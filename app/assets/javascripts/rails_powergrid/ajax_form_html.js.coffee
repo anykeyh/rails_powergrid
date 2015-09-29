@@ -1,7 +1,7 @@
 RailsPowergrid.AjaxFormHTML = React.createClass
   getInitialState: ->
     {
-      html: ""
+      html: null
     }
 
   componentDidMount: ->
@@ -21,8 +21,11 @@ RailsPowergrid.AjaxFormHTML = React.createClass
   componentDidUpdate: -> @evalScriptMarkups()
 
   render: ->
-    <div dangerouslySetInnerHTML={__html: @state.html}>
-    </div>
+    if @state.html
+      <div dangerouslySetInnerHTML={__html: @state.html}></div>
+    else
+      <div>Loading...</div>
+
 
 RailsPowergrid.prepareForm = (action, formElement, grid) ->
 
