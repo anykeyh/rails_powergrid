@@ -47,7 +47,7 @@
 
 
   &.powergrid-danger {
-    background-color: $background-danger-light;
+    background-color: $background-danger-lighter;
     border: solid 1px $background-danger;
     color: $color-danger;
 
@@ -83,6 +83,7 @@ form.powergrid-form {
 
   .powergrid-form-content {
     padding: 1em;
+    margin-top: 0.5em;
   }
 
   fieldset {

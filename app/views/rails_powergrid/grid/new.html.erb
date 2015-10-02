@@ -4,7 +4,8 @@
   end
 %>
 <div>
-  <form id="powergrid-form-new" class="powergrid-form" enctype="application/json" action="<%= powergrid_path %>" method="POST">
+  <form id="powergrid-form-new" class="powergrid-form" enctype="application/json" action="<%= powergrid_create_path %>" method="POST">
+      <div class="powergrid-errors"></div>
       <div class="powergrid-form-content">
       <% fieldsets = @permitted_columns.map{|c| @grid.get_column(c)}.group_by(&:fieldset) %>
 
@@ -24,7 +25,21 @@
               </div>
 
               <div class="powergrid-form-field">
-                <input type="text" name="resource[<%= column.name %>]" id="<%= encode_id 'resource', column.name, 'value' %>" value="<%=  column.default_value %>" placeholder="<%= column.placeholder %>" data-check="<%= encode_id 'resource', column.name, 'active' %>" />
+                <%
+                  case column.editor
+                    when 'Select'
+                %>
+                  <select type="select" name="resource[<%= column.name %>]" id="<%= encode_id 'resource', column.name, 'value' %>" data-check="<%= encode_id 'resource', column.name, 'active' %>">
+                    <% column.get_opts_for_select(@resource).each do |arr| 
+                        id, name, selected = arr
+                        selected = selected ? "selected='selected'" : ''
+                    %>
+                    <option value="<%=id%>" <%=selected%> ><%= name %></option>
+                    <% end %>
+                  </select>
+                <%   else %>
+                  <input type="text" name="resource[<%= column.name %>]" id="<%= encode_id 'resource', column.name, 'value' %>" value="<%=  column.default_value %>" placeholder="<%= column.placeholder %>" data-check="<%= encode_id 'resource', column.name, 'active' %>" />
+                <% end %>
               </div>
 
             </div>
@@ -34,7 +49,7 @@
     </div>
     <hr />
     <div>
-      <input type="checkbox" name="continue_creation" value="1" /> Continue creation after save
+      <input type="checkbox" id="powergrid_cb_continue_creation" name="continue_creation" value="1" /> Continue creation after save
     </div>
     <div class="powergrid-modal-buttons powergrid-clearfix">
       <button type="submit" class="pull-right powergrid-btn powergrid-success"><i class="fa fa-check fa-fw">&nbsp;</i>Submit</button>

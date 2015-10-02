@@ -33,12 +33,8 @@ class RailsPowergrid::Column
     else
       ref = model.reflect_on_association(name)
 
-      if ref
-        if ref.polymorphic?
-          query.order("#{ref.klass.arel_table.name}.#{ref.foreign_type} #{direction}, #{ref.klass.arel_table.name}.#{ref.foreign_key} #{direction}")
-        else
-          query.order("#{ref.klass.arel_table.name}.#{ref.foreign_key} #{direction}")
-        end
+      if ref && ref.klass.columns.select{|x| x.name.to_sym == delegate.to_sym}.first
+        query.order("#{ref.klass.arel_table.name}.#{delegate} #{direction}")
       else
         query #fallback
       end

@@ -10,6 +10,7 @@
 @import './rails_powergrid/_filters';
 @import './rails_powergrid/_footer';
 @import './rails_powergrid/_form';
+@import './rails_powergrid/_errors';
 
 @import './rails_powergrid/_headers.scss';
 @import './rails_powergrid/editors/_text';
@@ -25,6 +26,9 @@
   input[type=text], input[type=number], textarea, select {
     @include input-style;
   }
+}
+.powergrid-allow-horizontal-overflow {
+  overflow-x: auto;
 }
 
 .powergrid-clearfix {

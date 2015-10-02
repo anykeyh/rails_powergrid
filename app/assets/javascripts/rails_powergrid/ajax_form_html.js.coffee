@@ -1,18 +1,27 @@
 RailsPowergrid.AjaxFormHTML = React.createClass
+  statics:
+    instance: null
+
   getInitialState: ->
     {
       html: null
     }
 
   componentDidMount: ->
+    RailsPowergrid.AjaxFormHTML.instance = self
+
     RailsPowergrid.ajax(@props.url,
       method: "POST",
       data: @props.ajaxData,
       success: (data) =>
         @setState html: data.response
       error: (data) =>
-        @setState html: "<pre>" + data.response + "</pre>"
+        @setState html: data.response
     )
+
+  componentWillUnmount: ->
+    if RailsPowergrid.AjaxFormHTML.instance is self
+      RailsPowergrid.AjaxFormHTML.instance = null
 
   evalScriptMarkups: ->
     scripts = @getDOMNode().getElementsByTagName('script')
@@ -49,6 +58,23 @@ RailsPowergrid.prepareForm = (action, formElement, grid) ->
     RailsPowergrid.ajax url,
       method: method
       data: data
+      error: (req) ->
+        if req.status == 422
+          json = JSON.parse(req.response)
+
+          elm = formElement.querySelector(".powergrid-errors")
+          elm.style.display = 'block'
+
+          out =   "<ul>"
+          for field, errors of json.errors
+            out += "<li><strong>#{field}: #{ errors.join(',') }</strong></li>"
+
+          out +=  "</ul>"
+          elm.innerHTML = out
+        else
+          alert("Something wrong happens.")
+          console.error req.response
       success: (req) ->
-        RailsPowergrid.Modal.close()
         grid.refreshData()
+        unless document.getElementById('powergrid_cb_continue_creation')?.value?
+          RailsPowergrid.Modal.close()

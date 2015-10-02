@@ -4,7 +4,12 @@ class RailsPowergrid::Column
   default_for :allow_blank, true
 
   def get_opts_for_select model_instance
-    _exec(@opts[:opts_for_select], model_instance)
+    opts = _exec(@opts[:opts_for_select], model_instance)
+    if allow_blank?
+      [["",""], *opts]
+    else
+      opts
+    end
   end
 
   def opts_for_select
@@ -15,7 +20,7 @@ class RailsPowergrid::Column
     @opts[:opts_for_select] = x
   end
 
-  def allow_blank
+  def allow_blank?
     @opts[:allow_blank]
   end
 
@@ -28,13 +33,7 @@ class RailsPowergrid::Column
     selected_id = model_instance.send(ref.foreign_key)
 
     if ref
-      arr = ref.klass.all.map{|x| [x.id, x.try(:name) || x.to_s, selected_id==x.id]}.sort{|a,b| a[1]<=>b[1]}
-
-      if opts[:allow_blank]
-        arr = [["","", !selected_id], *arr]
-      end
-
-      return arr
+      return ref.klass.all.map{|x| [x.id, x.try(delegate) || x.to_s, selected_id==x.id]}.sort{|a,b| a[1]<=>b[1]}
     else
       []
     end

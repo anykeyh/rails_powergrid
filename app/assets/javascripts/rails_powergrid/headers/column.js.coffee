@@ -1,4 +1,4 @@
-HeaderColumn = React.createClass
+HeaderColumns = React.createClass
   getInitialState: ->
     {
       width: @props.data.width
@@ -72,11 +72,11 @@ HeaderColumn = React.createClass
       <div className="powergrid-header-resizer" onMouseDown=@handleResizing></div>
     </div>
 
-RailsPowergrid.HeadersColumn = React.createClass
+RailsPowergrid.HeaderColumns = React.createClass
   render: ->
     <div className="powergrid-clearfix powergrid-header">
       {
         for x in @props.columns when x.visible
-          <HeaderColumn parent=@props.parent data=x key="#{x.field}" />
+          <HeaderColumns parent=@props.parent data=x key="#{x.field}" />
       }
     </div>

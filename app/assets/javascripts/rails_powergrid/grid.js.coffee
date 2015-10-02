@@ -37,15 +37,12 @@ include
 
   getContentWrapperStyle: ->
     sum = 0
-    for x in @state.columns
-      sum+=x.width
+    sum+=x.width for x in @state.columns when x.visible
 
     {
       height: "#{@state.heightOfGrid}px"
       minWidth: "#{sum}px"
     }
-
-
 
   fireMountedEvent: ->
     RailsPowergrid.DynamicCallback(@props.onMounted).call(this)
@@ -68,7 +65,7 @@ include
 
     sumHeight = 0
 
-    for c in childs when c.className isnt 'powergrid-data-content-wrapper' #I'm not a big fan about this...
+    for c in childs when c.className isnt 'powergrid-allow-horizontal-overflow' #I'm not a big fan about this...
       sumHeight+=c.offsetHeight
 
     heightOfGrid = Math.max(30, height-sumHeight)
@@ -147,9 +144,7 @@ include
       success: (req) =>
         @setFooterText("Field updated")
         @updateRow(JSON.parse(req.responseText))
-      error: (req) =>
-        alert "An error happens processing the data. Please contact software support"
-
+      error: RailsPowergrid.ValidationErrorHandler()
 
   handleMouseMove: (evt) ->
     @state.dragMode?.update(evt)
@@ -249,18 +244,6 @@ include
 
   getColumns: -> @state.columns
 
-  preventDefaultScrolling: (evt) ->
-    target = evt.currentTarget
-
-    windowHeight  = target.offsetHeight
-    currentScroll = target.scrollTop
-    childHeight   = target.childNodes[0].offsetHeight
-    delta         = evt.wheelDelta
-
-    #So the page is not scrolling anymore when the mouse is on the grid
-    if (delta<0 && (currentScroll >= childHeight - windowHeight)) or ( delta>0 && currentScroll <= 0)
-      evt.preventDefault()
-      evt.stopPropagation()
 
   handleKeyPress: (evt) ->
 
@@ -293,7 +276,7 @@ include
         # We need to cut in chunk to optimize
         # the rendering process in chrome (it's already working well in firefox btw...)
         length = @state.data.length
-        length = Math.ceil(length/21) #One block every 21 items
+        length = Math.ceil(length/59) #One block every X items
         # Note: Each chunk should be a ODD number of items,
         # to avoid some issues with the rendering of the rows
 
@@ -307,7 +290,7 @@ include
               <RailsPowergrid.Row parent=this objectId=row.id key=row.id rowPosition=idx >
                 {
                   for column in @state.columns  when column.visible
-                    <RailsPowergrid.Cell key="#{column.field}" value=row[column.field] objectId=row.id rowPosition=idx opts=column parent=this />
+                    <RailsPowergrid.Cell key=column.field value=row[column.field] objectId=row.id rowPosition=idx opts=column parent=this />
                 }
               </RailsPowergrid.Row>
           }
@@ -321,15 +304,19 @@ include
       onMouseUp=@handleMouseUp
       onMouseMove=@handleMouseMove>
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
-      <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
-      <RailsPowergrid.HeadersColumn columns=@state.columns parent=this />
-      <div className="powergrid-data-content-wrapper"
-      style=@getContentWrapperStyle()
-      onScroll=@handleScrolling
-      onKeyDown=@handleKeyPress
-      tabIndex=0 >
-        <div className="powergrid-data-content" > {@generateRows()} </div>
+
+      <div className="powergrid-allow-horizontal-overflow">
+        <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
+        <RailsPowergrid.HeaderColumns columns=@state.columns parent=this />
+        <div className="powergrid-data-content-wrapper"
+        style=@getContentWrapperStyle()
+        onScroll=@handleScrolling
+        onKeyDown=@handleKeyPress
+        tabIndex=0 >
+          <div className="powergrid-data-content" > {@generateRows()} </div>
+        </div>
       </div>
+
       <RailsPowergrid.Footer text="Loading..." parent=this />
     </div>
 

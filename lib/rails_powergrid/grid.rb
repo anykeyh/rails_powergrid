@@ -160,6 +160,14 @@ class RailsPowergrid::Grid
     @columns.select(&:sortable?).map(&:name)
   end
 
+  def initialize_new_model
+    m = @model.new
+    @columns.each do |c| 
+      c.set_default! m
+    end
+    m
+  end
+
   def model_scope ctrl
     if @model_query
       ctrl.instance_exec @model, &@model_query
@@ -175,24 +183,24 @@ class RailsPowergrid::Grid
     end
   end
 
-
   def id
-    "powergrid_grid_#{name}"
+    "powergrid_#{name}"
   end
 
   def to_javascript opts={}
-    props = opts.merge({
+    props = {
       name: name,
       columns: @columns.map(&:to_hash),
       actions: @actions,
       ctrlPath: @ctrl_path,
-      height: height
-    })
+      height: height,
+      id: id
+    }.merge(opts)
 
 out = <<HTML
-  <div id="#{id}"></div>
+  <div id="#{props[:id]}"></div>
   <script>
-    React.render(React.createElement(RailsPowergrid.Grid, #{props.to_json}), document.getElementById("#{id}"));
+    React.render(React.createElement(RailsPowergrid.Grid, #{props.to_json}), document.getElementById("#{props[:id]}"));
   </script>
 HTML
 

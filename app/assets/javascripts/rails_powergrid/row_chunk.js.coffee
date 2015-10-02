@@ -19,6 +19,8 @@ RailsPowergrid.RowChunk = React.createClass
     if @state.visible isnt visible
       @setState visible: visible, height: dom.offsetHeight
 
+    return visible
+
   render: ->
     selectionClass = if @state.selected then "selected" else ""
     visibleTag = if @state.visible then "block" else "none"

@@ -1,4 +1,29 @@
 class RailsPowergrid::Column
+
+  #class Filter
+  #  class DSL < RailsPowergrid::DSL
+  #    accessor :func, :func
+  #  end
+  #
+  #  attr_accessor :column, :func, aggregate
+  #
+  #  def initialize opts, &block
+  #    opts.each do |k,v|
+  #      send(:"#{k}=", v)
+  #    end
+  #
+  #    DSL.new(&block) if block_given?
+  #  end
+  #
+  #  def apply model, operator, value
+  #    @column.instance_exec(@func, model, operator, value)
+  #  end
+  #
+  #  def to_hash
+  #    { filterable: true }
+  #  end
+  #end
+
   default_for :filter, _call_of(:_default_filter)
   default_for :filterable, true
 

@@ -2,6 +2,7 @@ class RailsPowergrid::Column
   default_for :getter, _call_of(:_default_get)
   default_for :setter, _call_of(:_default_set)
   default_for :default_value, nil
+  default_for :delegate, "name"
 
   def default_value
     @opts[:default_value]
@@ -11,12 +12,24 @@ class RailsPowergrid::Column
     @opts[:default_value] = x
   end
 
+  def set_default! model
+    set model, default_value
+  end
+
   def getter= cb
     @opts[:getter] = cb
   end
 
   def getter
     @opts[:getter]
+  end
+
+  def delegate
+    @opts[:delegate]
+  end
+
+  def delegate= x
+    @opts[:delegate] = x
   end
 
   def setter= cb
@@ -64,7 +77,7 @@ class RailsPowergrid::Column
         value = model.send(@name)
 
         if value.is_a?(ActiveRecord::Base)
-          return value.try(:name) || value.to_s
+          return value.try(delegate) || value.to_s
         else
           return value
         end

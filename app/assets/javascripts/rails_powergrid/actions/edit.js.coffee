@@ -6,6 +6,7 @@ RailsPowergrid.registerAction 'edit',
     ids = ajaxFormHTML.getDOMNode().querySelectorAll("form input[name='ids']")
     ids?.value = ajaxFormHTML.props.ids
 
+
   onAction: (grid) ->
     RailsPowergrid.Modal.show(
       <RailsPowergrid.Modal title="Edit">

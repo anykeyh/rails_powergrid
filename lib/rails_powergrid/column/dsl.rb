@@ -12,6 +12,10 @@ class RailsPowergrid::Column::DSL
       @column.setter = block
     end
 
+    def default_value val
+      @column.default_value = val
+    end
+
     def opts_for_select &block
       @column.opts_for_select = block
     end
@@ -34,5 +38,13 @@ class RailsPowergrid::Column::DSL
 
     def aggregate value
       @column.aggregate = value
+    end
+
+    def editor editor
+      @column.editor = editor
+    end
+
+    def editable value
+      @column.editable = value
     end
 end

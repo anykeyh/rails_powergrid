@@ -17,7 +17,23 @@ RailsPowergrid._GridStruct.Scrolling =
     scroll = evt.target.scrollTop + evt.target.offsetHeight
     height = evt.target.scrollHeight
 
-    c.checkVisibility(evt.target.scrollTop, scroll) for k,c of @rowChunks
+    for k,c of @rowChunks
+      c.checkVisibility(evt.target.scrollTop, scroll)
 
     if scroll>=height-250
       @fetchNextPage()
+
+  preventDefaultScrolling: (evt) ->
+    return if Math.abs(evt.wheelDeltaX) > Math.abs(evt.wheelDeltaY)
+
+    target = evt.currentTarget
+
+    windowHeight  = target.offsetHeight
+    currentScroll = target.scrollTop
+    childHeight   = target.childNodes[0].offsetHeight
+    delta         = evt.wheelDelta
+
+    #So the page is not scrolling anymore when the mouse is on the grid
+    if (delta<0 && (currentScroll >= childHeight - windowHeight)) or ( delta>0 && currentScroll <= 0)
+      evt.preventDefault()
+      evt.stopPropagation()

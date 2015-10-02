@@ -17,6 +17,8 @@ RailsPowergrid.Editors.Select = React.createClass
           if selected
             value = id
             break
+
+        console.log "setState", options, value
         @setState(options: options, value: value)
 
     @getDOMNode().querySelector("select").focus()
@@ -25,7 +27,8 @@ RailsPowergrid.Editors.Select = React.createClass
     @setState(value: evt.target.value)
 
   componentWillUnmount: ->
-    @props.onUpdate?(@state.value)
+    if @state.value?
+      @props.onUpdate?(@state.value)
 
   render: ->
     currentSelection = @state.value

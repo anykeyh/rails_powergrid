@@ -6,12 +6,13 @@ class RailsPowergrid::GridController < ActionController::Base
   before_filter :load_resource, only: %i(read update_field options_field)
 
   helper_method :powergrid_path
+  helper_method :powergrid_create_path
 
   def prepare_collection_query
     filter = params[:f] || {}
     @query = @grid.prepare_query(self).predicator(filter, @grid)
 
-    fix_order_and_limit_offset
+    set_order_limit_and_offset
   end
 
   # LIST
@@ -22,15 +23,13 @@ class RailsPowergrid::GridController < ActionController::Base
   end
 
   def new
+    @resource = @grid.initialize_new_model
+
     @permitted_columns = @grid.form_permit
 
     render "#{@grid.form}/new"
   end
 
-  # CREATE
-  def create
-    @grid.model.new(param_permits)
-  end
 
   # READ
   def read
@@ -41,7 +40,6 @@ class RailsPowergrid::GridController < ActionController::Base
   def edit
     @ids = params[:ids].map(&:to_i)
     @resources = @grid.prepare_query(self).where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + params[:ids] )
-
     @permitted_columns = @grid.form_permit
 
     #Combinate the resources
@@ -68,6 +66,19 @@ class RailsPowergrid::GridController < ActionController::Base
     render "#{@grid.form}/edit"
   end
 
+  # CREATE
+  def create
+    @permitted_columns = @grid.form_permit
+
+    @resource = @grid.initialize_new_model(param_permits)
+
+    if resource.save
+      render :json => { status: "OK" }
+    else
+      render :json => { status: "ERROR", errors: resource.errors.messages }, status: :unprocessable_entity
+    end
+  end
+
 
   # UPDATE MULTIPLE MODELS
   def update
@@ -91,10 +102,20 @@ class RailsPowergrid::GridController < ActionController::Base
         @grid.get_column(k).set(resource, v)
       end
 
-      resource.save!
     end
 
-    render :json => { status: "OK" }
+    begin
+      Customer.transaction do |t|
+        is_saved = !@resources.map(&:save).uniq.include?(false)
+        if is_saved
+          render :json => { status: "OK" }
+        else
+          raise ActiveRecord::Rollback
+        end
+      end
+    rescue ActiveRecord::Rollback
+      render :json => { status: "ERROR", errors: @resources.inject({}){|h, x| h.merge!(x.errors.messages) } }, status: :unprocessable_entity
+    end
   end
 
 
@@ -108,7 +129,7 @@ class RailsPowergrid::GridController < ActionController::Base
     if @resource.save
       render :json => @grid.get_hash(@resource)
     else
-      render :json => {status: "FAIL"}, status: 501
+      render :json => {status: "ERROR", errors: @resource.errors }, status: :unprocessable_entity
     end
   end
 
@@ -119,7 +140,7 @@ class RailsPowergrid::GridController < ActionController::Base
     if col
       render :json => col.get_opts_for_select(@resource)
     else
-      render :json => { status: "NOTFOUND" }, status: 404
+      render :json => { status: "ERROR" }, status: :not_found
     end
   end
 
@@ -138,6 +159,10 @@ protected
     Rails.application.routes.url_helpers.powergrid_path(grid: @grid.name)
   end
 
+  def powergrid_create_path
+    Rails.application.routes.url_helpers.powergrid_create_path(grid: @grid.name)
+  end
+
   def no_pagination
     params.delete(:l)
     params.delete(:o)
@@ -148,7 +173,7 @@ private
     params[:format] ||= :json
   end
 
-  def fix_order_and_limit_offset
+  def set_order_limit_and_offset
     field_by, direction = params[:ob], params[:od]
 
 

@@ -14,6 +14,7 @@ class ActionDispatch::Routing::Mapper
     post "grids/:grid" => "#{ctrl}#index", as: "powergrid"
     delete "grids/:grid" => "#{ctrl}#destroy"
 
+    post "grids/:grid/edit" => "#{ctrl}#edit"
     post "grids/:grid/create" => "#{ctrl}#create", as: "powergrid_create"
     post "grids/:grid/new" => "#{ctrl}#new"
     match "grids/:grid" => "#{ctrl}#update", via: [:put, :patch]
