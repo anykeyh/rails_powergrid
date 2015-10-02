@@ -35,9 +35,9 @@ HeaderColumns = React.createClass
   getDirectionSymbol: ->
     if @props.parent.state.orderColumn is @props.data.field
       if @props.parent.state.orderDirection is "d"
-        "▲"
-      else
         "▼"
+      else
+        "▲"
     else
       ""
 

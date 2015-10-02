@@ -15,6 +15,7 @@ include(RailsPowergrid._GridStruct.Selection)
 include
   statics:
     REQUEST_LIMIT: 100
+    ITEMS_PER_CHUNK: 49 #Please keep it odd and not even for the odd/even css
     _gridList: {}
     get: (name) -> RailsPowergrid.Grid._gridList[name]
     _register: (name, instance) -> RailsPowergrid.Grid._gridList[name] = instance
@@ -276,14 +277,14 @@ include
         # We need to cut in chunk to optimize
         # the rendering process in chrome (it's already working well in firefox btw...)
         length = @state.data.length
-        length = Math.ceil(length/59) #One block every X items
+        length = Math.ceil(length/RailsPowergrid.Grid.ITEMS_PER_CHUNK) #One block every X items
         # Note: Each chunk should be a ODD number of items,
         # to avoid some issues with the rendering of the rows
 
         for chunk in [0 ... length]
           <RailsPowergrid.RowChunk key="chunk#{chunk}" reactKey="chunk#{chunk}" parent=this >
           {
-            for idx in [chunk*30 ... (chunk+1) * 30 ]
+            for idx in [chunk*RailsPowergrid.Grid.ITEMS_PER_CHUNK ... (chunk+1) * RailsPowergrid.Grid.ITEMS_PER_CHUNK ]
               row = @state.data[idx]
               break unless row
 

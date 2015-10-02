@@ -47,4 +47,8 @@ class RailsPowergrid::Column::DSL
     def editable value
       @column.editable = value
     end
+
+    def renderer value
+      @column.renderer = value
+    end
 end
