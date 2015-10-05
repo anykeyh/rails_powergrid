@@ -16,7 +16,7 @@ TODO. You can checkout the [demo](https://github.com/anykeyh/demo_powergrid).
 1 - Add theses lines to your gemfile:
 
 ```ruby
-  gem 'rails_powergrid', github: "anykeyh/rails_powergrid", branch: "master"
+  gem "rails_powergrid", github: "anykeyh/rails_powergrid", branch: "master"
   gem "compass-rails", github: "Compass/compass-rails", branch: "master"
 ```
 
