@@ -139,9 +139,9 @@ class RailsPowergrid::Grid
       a
     end.uniq
 
-    puts fields.inspect
-
-    query.select(fields)
+    #Disable select for a while
+    #query.select(fields)
+    query
   end
 
   def predicator_permit
