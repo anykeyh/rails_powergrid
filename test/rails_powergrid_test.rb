@@ -1,7 +1,8 @@
 require 'test_helper'
 
 class RailsPowergridTest < ActiveSupport::TestCase
-  test "truth" do
-    assert_kind_of Module, RailsPowergrid
+  # I'm thinking about using capybara-webkit
+  test "I should test everything" do
+    assert false
   end
 end
