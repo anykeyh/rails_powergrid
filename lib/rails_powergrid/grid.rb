@@ -140,8 +140,7 @@ class RailsPowergrid::Grid
     end.uniq
 
     #Disable select for a while
-    #query.select(fields)
-    query
+    query.select(fields)
   end
 
   def predicator_permit

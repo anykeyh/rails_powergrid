@@ -35,7 +35,7 @@ module RailsPowergrid::GridConcern
   # SHOW MULTIPLE MODELS EDIT FORM
   def edit
     @ids = params[:ids].map(&:to_i)
-    @resources = @grid.prepare_query(self).where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + params[:ids] )
+    @resources = @grid.where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + params[:ids] )
     @permitted_columns = @grid.form_permit
 
     #Combinate the resources
@@ -79,7 +79,7 @@ module RailsPowergrid::GridConcern
   # UPDATE MULTIPLE MODELS
   def update
     @ids = params[:ids].split(",").map(&:to_i)
-    @resources = @grid.prepare_query(self).where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + @ids)
+    @resources = @grid.where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + @ids)
 
     permitted_columns = @grid.form_permit.map(&:to_sym)
 
@@ -199,7 +199,7 @@ private
   end
 
   def load_resource
-    @resource = @grid.prepare_query(self).find(params[:id])
+    @resource = @grid.find(params[:id])
   end
 
   def load_grid
