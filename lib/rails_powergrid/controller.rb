@@ -1,18 +1,14 @@
-class RailsPowergrid::GridController < ActionController::Base
-  layout false
+module RailsPowergrid::GridConcern
+  extend ActiveSupport::Concern
 
-  before_filter :set_default_json
-  before_filter :load_grid
-  before_filter :load_resource, only: %i(read update_field options_field)
+  included do
+    layout false
 
-  helper_method :powergrid_path
-  helper_method :powergrid_create_path
+    before_action :set_default_json
+    before_action :load_grid
 
-  def prepare_collection_query
-    filter = params[:f] || {}
-    @query = @grid.prepare_query(self).predicator(filter, @grid)
-
-    set_order_limit_and_offset
+    helper_method :powergrid_path
+    helper_method :powergrid_create_path
   end
 
   # LIST
@@ -30,11 +26,11 @@ class RailsPowergrid::GridController < ActionController::Base
     render "#{@grid.form}/new"
   end
 
-
   # READ
   def read
     render :json => @resource
   end
+
 
   # SHOW MULTIPLE MODELS EDIT FORM
   def edit
@@ -121,6 +117,8 @@ class RailsPowergrid::GridController < ActionController::Base
 
   # UPDATE ONE OR MORE FIELD TO ONE MODEL
   def update_field
+    load_resource
+
     param_permits.each do |k,v|
       @grid.get_column(k).set(@resource, v)
     end
@@ -136,6 +134,8 @@ class RailsPowergrid::GridController < ActionController::Base
 
   #Get option list for some fields
   def options_field
+    load_resource
+
     col = @grid.get_column(params[:field])
     if col
       render :json => col.get_opts_for_select(@resource)
@@ -154,6 +154,13 @@ class RailsPowergrid::GridController < ActionController::Base
   end
 
 protected
+  def prepare_collection_query
+    filter = params[:f] || {}
+    @query = @grid.prepare_query(self).predicator(filter, @grid)
+
+    set_order_limit_and_offset
+  end
+
 
   def powergrid_path
     Rails.application.routes.url_helpers.powergrid_path(grid: @grid.name)
@@ -189,13 +196,7 @@ private
     if params[:o]
       @query = @query.offset(params[:o].to_i)
     end
-
   end
-
-  #def ensure_json_request
-  #  return if params[:format] == "json" || request.headers["Accept"] =~ /json/
-  #  render :nothing => true, :status => 406
-  #end
 
   def load_resource
     @resource = @grid.prepare_query(self).find(params[:id])
@@ -208,4 +209,9 @@ private
   def param_permits
     params.require(:resource).permit(*(@grid.form_permit+@grid.edit_permit).uniq)
   end
+
+end
+
+class RailsPowergrid::GridController < ActionController::Base
+  include RailsPowergrid::GridConcern
 end
