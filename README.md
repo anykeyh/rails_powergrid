@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   rails_powergrid
   #...
 end
-```end
+```
 
 3 - Includes the assets
 
