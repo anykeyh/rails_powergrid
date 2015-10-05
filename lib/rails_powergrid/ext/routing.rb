@@ -3,7 +3,6 @@ class ActionDispatch::Routing::Mapper
     DEFAULT_OPTIONS = {
       controller: "RailsPowergrid::GridController"
     }
-
   end
 
   def rails_powergrid opts={}
@@ -15,7 +14,7 @@ class ActionDispatch::Routing::Mapper
     delete "grids/:grid" => "#{ctrl}#destroy"
 
     post "grids/:grid/edit" => "#{ctrl}#edit"
-    post "grids/:grid/create" => "#{ctrl}#create", as: "powergrid_create"
+    post "grids/:grid/create" => "#{ctrl}#create", as: "powergrid_create", :name_prefix => nil
     post "grids/:grid/new" => "#{ctrl}#new"
     match "grids/:grid" => "#{ctrl}#update", via: [:put, :patch]
 

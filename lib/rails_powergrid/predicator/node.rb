@@ -17,7 +17,7 @@ module Predicator
 
       @value = if value_unsecure.is_a?(Array)
         if value_unsecure.any?
-          value_unsecure.map{|x| @column._sanitize_for_type(x) }.join(", ")
+          "(#{value_unsecure.map{|x| @column._sanitize_for_type(x) }.join(", ")})"
         else
           #TRICKY: WE MAKE IT NULL...
           @operator = "IS"
