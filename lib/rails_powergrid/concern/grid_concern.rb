@@ -64,7 +64,7 @@ module RailsPowergrid::GridConcern
 
   # CREATE
   def create
-    permitted_columns = @grid.form_permit
+    permitted_columns = param_permits
 
     resource = @grid.initialize_new_model
 
@@ -126,7 +126,6 @@ module RailsPowergrid::GridConcern
     param_permits.each do |k,v|
       @grid.get_column(k).set(@resource, v)
     end
-
 
     if @resource.save
       render :json => @grid.get_hash(@resource)
