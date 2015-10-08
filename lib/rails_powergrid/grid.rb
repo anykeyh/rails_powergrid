@@ -159,7 +159,7 @@ class RailsPowergrid::Grid
     @columns.select(&:sortable?).map(&:name)
   end
 
-  def initialize_new_model params
+  def initialize_new_model
     m = @model.new
     @columns.each do |c|
       c.set_default! m

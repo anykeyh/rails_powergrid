@@ -64,12 +64,12 @@ module RailsPowergrid::GridConcern
 
   # CREATE
   def create
-    @permitted_columns = @grid.form_permit
+    permitted_columns = @grid.form_permit
 
-    @resource = @grid.initialize_new_model
+    resource = @grid.initialize_new_model
 
-    @permitted_columns.each do |k,v|
-      @grid.get_column(k).set(@resource, v)
+    permitted_columns.each do |k,v|
+      @grid.get_column(k).set(resource, v)
     end
 
     if resource.save
