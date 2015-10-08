@@ -202,7 +202,7 @@ private
   end
 
   def load_resource
-    @resource = @grid.find(params[:id])
+    @resource = @grid.model.find(params[:id])
   end
 
   def load_grid
