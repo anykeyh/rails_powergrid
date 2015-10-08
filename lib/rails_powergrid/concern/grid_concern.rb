@@ -113,7 +113,7 @@ module RailsPowergrid::GridConcern
           raise ActiveRecord::Rollback
         end
       end
-    rescue ActiveRecord::Rollback
+    rescue ActiveRecord::Rollback, ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
       render :json => { status: "ERROR", errors: @resources.inject({}){|h, x| h.merge!(x.errors.messages) } }, status: :unprocessable_entity
     end
   end
@@ -121,15 +121,20 @@ module RailsPowergrid::GridConcern
 
   # UPDATE ONE OR MORE FIELD TO ONE MODEL
   def update_field
-    load_resource
+    begin
+      load_resource
 
-    param_permits.each do |k,v|
-      @grid.get_column(k).set(@resource, v)
-    end
+      param_permits.each do |k,v|
+        @grid.get_column(k).set(@resource, v)
+      end
 
-    if @resource.save
-      render :json => @grid.get_hash(@resource)
-    else
+      if @resource.save
+        render :json => @grid.get_hash(@resource)
+      else
+        render :json => {status: "ERROR", errors: @resource.errors }, status: :unprocessable_entity
+      end
+    rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
+      #This case can occurs when one field is a compound field and call "save!" method for example.
       render :json => {status: "ERROR", errors: @resource.errors }, status: :unprocessable_entity
     end
   end
