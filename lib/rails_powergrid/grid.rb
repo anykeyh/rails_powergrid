@@ -1,7 +1,7 @@
 
 class RailsPowergrid::Grid
   @grid_list = {}
-  class << this
+  class << self
     def register name, &block
       @grid_list[name] = block
     end
