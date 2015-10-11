@@ -1,5 +1,12 @@
 
 class RailsPowergrid::Grid
+  @grid_list = {}
+  class << this
+    def register name, &block
+      @grid_list[name] = block
+    end
+  end
+
 
   class DSL
     class << self
@@ -51,9 +58,14 @@ class RailsPowergrid::Grid
   end
 
   def self.load_file file_name, name
+    unless Rails.env.production?
+      # We assume the code is autoloaded at start in production environment
+      load file_name
+    end
+
     grid = RailsPowergrid::Grid.new(name)
 
-    grid.dsl.instance_eval(File.read(file_name), file_name, 0)
+    grid.dsl.instance_eval(@grid_list[name])
 
     grid.validate!
 
