@@ -170,7 +170,6 @@ include
           @allDataHasBeenFetched = false
           @fetchedPages = 0
           @_unselectRow(rowPosition) for rowPosition in @selectedRowIndex
-          @clearSelection()
 
           data = JSON.parse(req.responseText)
           @setFooterText("Fetched")
