@@ -87,15 +87,11 @@ module RailsPowergrid::GridConcern
 
     permitted_columns = @grid.form_permit.map(&:to_sym)
 
-    puts "resource = #{params[:resource].inspect}"
-
     params_permitted = Hash[
       params["resource"].select do |column_name,value|
         permitted_columns.include?(column_name.to_sym) && value["active"]
       end.map{|k,v| [k, v["value"]]}
     ]
-
-    puts "params_permitted: #{params_permitted.inspect}"
 
     @resources.each do |resource|
       params_permitted.each do |k,v|
@@ -211,7 +207,7 @@ private
   end
 
   def load_grid
-    @grid = RailsPowergrid::Grid.load(params[:grid])
+    @grid = RailsPowergrid::Grid.get(params[:grid])
   end
 
   def param_permits

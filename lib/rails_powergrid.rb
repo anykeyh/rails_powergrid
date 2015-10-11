@@ -69,7 +69,7 @@ module RailsPowergrid
     end
 
     def grid name, opts={}
-      RailsPowergrid::Grid.load(name).to_javascript(opts)
+      RailsPowergrid::Grid.get(name).to_javascript(opts)
     end
   end
 end

@@ -1,9 +1,9 @@
 
 class RailsPowergrid::Grid
-  @grid_list = {}
+  @grid_declarations = {}
   class << self
     def register name, &block
-      @grid_list[name] = block
+      @grid_declarations[name] = block
     end
   end
 
@@ -65,15 +65,15 @@ class RailsPowergrid::Grid
 
     grid = RailsPowergrid::Grid.new(name)
 
-    grid.dsl.instance_eval(@grid_list[name])
+    grid.dsl.instance_eval(&@grid_declarations[name])
 
     grid.validate!
 
     return grid
   end
 
-  def self.load grid_name
-    secured_grid = grid_name.gsub(/[^a-zA-Z\_\/]/, "")
+  def self.get grid_name
+    secured_grid = grid_name.gsub(/[^a-zA-Z0-9\_\/]/, "")
 
     grid_file = File.join(*secured_grid.split("/").compact) + "_grid.rb"
 
