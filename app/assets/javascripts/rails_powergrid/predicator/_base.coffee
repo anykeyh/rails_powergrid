@@ -1,8 +1,9 @@
 #! require ./parser
 RailsPowergrid.where = (condition, variables...) ->
+  console.log "WHERE ", condition, variables
   result = {}
 
-  if typeof(condition) == "string"
+  if typeof(condition) is "string"
     predicates = RailsPowergrid.Predicator.parse(condition)
 
     mutableVars = [].concat(variables)
@@ -22,19 +23,16 @@ RailsPowergrid.where = (condition, variables...) ->
     predicates = condition
 
   result.where = (condition, variables...) ->
-    subQuery = RailsPowergrid.where(condition, variables).predicates
-
-    if subQuery instanceof Array 
-      subQuery = subQuery[0]
+    subQuery = RailsPowergrid.where.apply(RailsPowergrid, [condition].concat(variables)).predicates
 
     return RailsPowergrid.where(
       "and": [
-        result.predicates
+        @predicates
         subQuery
       ])
 
   result.or_where = (condition, variables...) ->
-    subQuery = RailsPowergrid.where(condition, variables).predicates
+    subQuery = RailsPowergrid.where.apply(RailsPowergrid, [condition].concat(variables)).predicates
 
     if subQuery instanceof Array
       subQuery = subQuery[0]
