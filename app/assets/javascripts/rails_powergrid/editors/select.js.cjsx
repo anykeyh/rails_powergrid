@@ -5,7 +5,7 @@ RailsPowergrid.Editors.Select = React.createClass
     }
 
   componentDidMount: ->
-    RailsPowergrid.ajax "/grids/#{@props.parent.getName()}/#{@props.objectId}/#{@props.opts.field}/options",
+    RailsPowergrid.ajax "#{@props.parent.getCtrlPath("#{@props.objectId}/#{@props.opts.field}/options")}",
       method: "POST"
       data: { field: @props.opts.field }
       success: (req) =>

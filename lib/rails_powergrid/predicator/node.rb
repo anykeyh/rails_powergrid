@@ -34,7 +34,7 @@ module Predicator
         when "NULL"
           @operator = "IS"
           @value = "NULL"
-        when "NOT NULL"
+        when "NOT_NULL"
           @operator = "IS"
           @value = "NOT NULL"
         else

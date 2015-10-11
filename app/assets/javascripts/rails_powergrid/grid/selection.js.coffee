@@ -15,6 +15,7 @@ RailsPowergrid._GridStruct.Selection =
 
   clearSelection: ->
     @selectedRowIndex = []
+    @lastRowPosition = 0
     @fireSelectionChangeEvent()
 
   setSelection: (rowPosition) ->

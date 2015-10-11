@@ -167,8 +167,10 @@ include
         method: "POST"
         data: @getPOSTParameters()
         success: (req) =>
+          @allDataHasBeenFetched = false
           @fetchedPages = 0
           @_unselectRow(rowPosition) for rowPosition in @selectedRowIndex
+          @clearSelection()
 
           data = JSON.parse(req.responseText)
           @setFooterText("Fetched")
@@ -181,6 +183,7 @@ include
 
   fetchNextPage: ->
     return if @fetchingInProgress
+    return if @allDataHasBeenFetched
 
     @fetchingInProgress = true
     data = @getPOSTParameters()
@@ -202,6 +205,8 @@ include
           if newData.length isnt 0
             @state.data = @state.data.concat newData
             @setState data: @state.data
+          else
+            @allDataHasBeenFetched=true
 
         error: (req) =>
           @fetchingInProgress = false
