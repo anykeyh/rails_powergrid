@@ -96,14 +96,11 @@ module Predicator
       where = query_tree.where_clause
       having = query_tree.having_clause
 
-      puts where
-      puts having
-
-      if where && !where.empty?
+      if where && !where.strip.empty?
         query = query.where(where)
       end
 
-      if having && !having.empty?
+      if having && !having.strip.empty?
         query = query.having(having)
       end
 

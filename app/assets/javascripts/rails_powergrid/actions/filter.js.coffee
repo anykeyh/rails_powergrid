@@ -3,6 +3,6 @@ RailsPowergrid.registerAction 'filter',
   application: '*'
 
   onAction: (grid) ->
-    alert "JUST DO IT!"
+    alert "TODO: Enable/Disable filter bar"
 
   icon: 'search'

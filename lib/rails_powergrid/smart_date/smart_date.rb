@@ -30,9 +30,13 @@ module RailsPowergrid::SmartDate
 
     def generate_sql field, operator, value
       if value!="NULL" && value!="NOT NULL"
+        Rails.logger.debug "CHRONIC TEST #{value}"
+
         real_date = Chronic.parse(value, guess: false)
 
         if real_date.nil?
+          Rails.logger.debug "CHRONIC FAIL?"
+
           ActiveRecord::Base::sanitize(false) #`False` filter?
         else
           operation field, operator, ActiveRecord::Base::sanitize(real_date.begin),

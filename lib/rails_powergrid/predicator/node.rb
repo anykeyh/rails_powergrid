@@ -15,19 +15,20 @@ module Predicator
 
       operator_unsecure = hash.keys.first
 
+      operator = opts[:operators][operator_unsecure.to_sym]
+
       @value = if value_unsecure.is_a?(Array)
         if value_unsecure.any?
           "(#{value_unsecure.map{|x| @column._sanitize_for_type(x) }.join(", ")})"
         else
           #TRICKY: WE MAKE IT NULL...
-          @operator = "IS"
+          operator = "IS"
           "NULL"
         end
       else
         @column._sanitize_for_type(value_unsecure)
       end
 
-      operator = opts[:operators][operator_unsecure.to_sym]
 
       if operator
         case operator #Managing the special operators...
@@ -51,12 +52,12 @@ module Predicator
 
     def where_clause
       return "" if aggregate
-      @column.apply_filter(query, operator, value)
+      "(" + @column.apply_filter(query, operator, value) + ")"
     end
 
     def having_clause
       return "" unless aggregate
-      @column.apply_filter(query, operator, value)
+      "(" + @column.apply_filter(query, operator, value) + ")"
     end
 
     def diffuse_aggregate_tag
