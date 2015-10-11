@@ -24,7 +24,7 @@ RailsPowergrid.where = (condition, variables...) ->
   result.where = (condition, variables...) ->
     subQuery = RailsPowergrid.where(condition, variables).predicates
 
-    if subQuery instanceof (array)
+    if subQuery instanceof Array 
       subQuery = subQuery[0]
 
     return RailsPowergrid.where(
@@ -36,7 +36,7 @@ RailsPowergrid.where = (condition, variables...) ->
   result.or_where = (condition, variables...) ->
     subQuery = RailsPowergrid.where(condition, variables).predicates
 
-    if subQuery instanceof (array)
+    if subQuery instanceof Array
       subQuery = subQuery[0]
 
     return RailsPowergrid.where(
