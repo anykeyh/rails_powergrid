@@ -15,7 +15,7 @@ include(RailsPowergrid._GridStruct.Selection)
 include
   statics:
     REQUEST_LIMIT: 100
-    ITEMS_PER_CHUNK: 49 #Please keep it odd and not even for the odd/even css
+    ITEMS_PER_CHUNK: 48 #Please keep it even for the odd/even css
     _gridList: {}
     get: (name) -> RailsPowergrid.Grid._gridList[name]
     _register: (name, instance) -> RailsPowergrid.Grid._gridList[name] = instance
