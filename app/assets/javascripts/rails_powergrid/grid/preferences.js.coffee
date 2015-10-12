@@ -1,3 +1,5 @@
 RailsPowergrid._GridStruct.Preferences =
-  setPreference: (columnName, value) ->
+  setPreference: (columnName, field, value) ->
     #RailsPowergrid.ajax
+
+  getPreference: (columnName, field, value) ->

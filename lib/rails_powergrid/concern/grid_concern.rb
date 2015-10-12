@@ -135,6 +135,14 @@ module RailsPowergrid::GridConcern
     end
   end
 
+  # Update the preferences for this grid
+  def update_prefs
+    column = params[:column]
+    key = params[:key]
+    value = params[:value]
+
+    
+  end
 
   #Get option list for some fields
   def options_field

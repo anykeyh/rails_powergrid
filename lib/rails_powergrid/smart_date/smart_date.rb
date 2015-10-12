@@ -4,6 +4,15 @@
 # Using chronic to generate SQL query.
 # Loaded only if chronic is added to the gemlist.
 #
+# Honestly chronic is not so good gem, but I didn't find
+# anything that fit my needs.
+# The first thing we date is it should be ALWAYS a range.
+# Chronic helps doing it, but not so well, it's not possible
+# to get range from year for example.
+#
+# Maybe later I would love to make my own date gem, simpler in some expression
+# and more powerful for others (ex: "year 2015")
+#
 #
 require 'chronic'
 module RailsPowergrid::SmartDate

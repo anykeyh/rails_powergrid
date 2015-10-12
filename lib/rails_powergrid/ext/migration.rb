@@ -19,12 +19,16 @@ module RailsPowergrid::Migration
 
   def rails_powergrid_preferences!
     create_table :rails_powergrid_preferences do
+      t.integer :owner_id, index: true, null: false
+      t.string :owner_type, index: true, null: false
+
       t.string :grid_name, index: true
       t.string :column_name, index: true
 
-      t.jsonb :values, default: '{}'
+      t.string :values, index: true
+      #t.jsonb :values, default: '{}'
     end
-    add_index  :rails_powergrid_preferences, :values, using: :gin
+    #add_index  :rails_powergrid_preferences, :values, using: :gin
   end
 
   def rails_powergrid!
