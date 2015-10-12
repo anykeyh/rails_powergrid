@@ -11,6 +11,7 @@ include = (mixin) ->
 
 include(RailsPowergrid._GridStruct.Scrolling)
 include(RailsPowergrid._GridStruct.Selection)
+include(RailsPowergrid._GridStruct.Preferences)
 
 include
   statics:

@@ -2,7 +2,25 @@
 class RailsPowergrid::Grid
   @grid_declarations = {}
   class << self
-    def register name, &block
+    def detect_grid_name filename
+      absolute_file = File.expand_path(filename)
+      Rails.configuration.rails_powergrid[:grid_path].each do |path|
+        absolute_path = File.expand_path(path)
+        if absolute_file.index(absolute_path) == 0
+          if absolute_path[-1] != "/"
+            absolute_path << "/"
+          end
+          return absolute_file[absolute_path.length...-"_grid.rb".length] #We remove the start and the .rb
+        end
+      end
+    end
+
+    def register name=nil, &block
+      #unless name
+        filename = caller_locations(1,1).first.path
+        name = detect_grid_name(filename)
+      #end
+
       @grid_declarations[name] = block
     end
   end
