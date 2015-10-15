@@ -253,8 +253,13 @@ include
 
   handleKeyPress: (evt) ->
 
+    contentWrapper = @getDOMNode().querySelector(".powergrid-data-content-wrapper")
+
     switch evt.key
       when "ArrowDown"
+        #Blur the current focused event, in case of cell edition
+        contentWrapper.focus() if document.activeElement isnt contentWrapper
+
         evt.preventDefault()
         sel = Math.min(@lastRowPosition+1, @state.data.length-1)
 
@@ -263,6 +268,8 @@ include
         else
           @setSelection sel
       when "ArrowUp"
+        contentWrapper.focus() if document.activeElement isnt contentWrapper
+
         evt.preventDefault()
         sel = Math.max(@lastRowPosition-1, 0)
         if(evt.shiftKey)
