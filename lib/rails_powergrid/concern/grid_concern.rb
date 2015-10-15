@@ -127,11 +127,11 @@ module RailsPowergrid::GridConcern
       if @resource.save
         render :json => @grid.get_hash(@resource)
       else
-        render :json => {status: "ERROR", errors: @resource.errors }, status: :unprocessable_entity
+        render :json => {status: "ERROR", errors: @resource.errors.messages }, status: :unprocessable_entity
       end
     rescue ActiveRecord::RecordNotSaved, ActiveRecord::RecordInvalid
       #This case can occurs when one field is a compound field and call "save!" method for example.
-      render :json => {status: "ERROR", errors: @resource.errors }, status: :unprocessable_entity
+      render :json => {status: "ERRORS", errors: @resource.errors.messages }, status: :unprocessable_entity
     end
   end
 
