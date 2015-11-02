@@ -1,6 +1,6 @@
 require 'rubyXL'
 
-class RailsPowergrid::GridController < ActionController::Base
+module RailsPowergrid::GridConcern
   alias __index_old index
   def index
     if params[:format] == "xlsx"
