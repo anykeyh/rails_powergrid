@@ -5,7 +5,7 @@ RailsPowergrid.registerAction 'delete',
     ids = grid.getSelectedIds()
     if confirm("Your about to delete resources, probably permanently! Are you sure to do that?")
       RailsPowergrid.ajax(
-        "/grids/#{grid.getName()}",
+        grid.getCtrlPath(),
         method: "DELETE",
         data: {ids: ids}
         success: -> grid.refreshData()
