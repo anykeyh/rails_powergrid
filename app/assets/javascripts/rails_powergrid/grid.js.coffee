@@ -314,8 +314,9 @@ include
 
   render: ->
     mergedColumnPreferences = [].concat @state.columns
-    for col in mergedColumnPreferences
-      @getPreferences(col.field)
+
+    for col, idx in mergedColumnPreferences
+      mergedColumnPreferences[idx] = RailsPowergrid.merge({}, col, @getPreferences(col.field))
 
     time = Date.now()
     result = <div className="powergrid powergrid-clearfix"

@@ -136,12 +136,16 @@ module RailsPowergrid::GridConcern
   end
 
   # Update the preferences for this grid
-  def update_prefs
-    column = params[:column]
-    key = params[:key]
-    value = params[:value]
+  def update_preferences
+    params[:columns].each do |k,v|
+      col = @grid.get_column(params[:field])
 
-    
+      if col
+        RailsPowergrid::Preference.update(get_current_user, self, params[:field], v)
+      end
+
+    end
+    render json: {}
   end
 
   #Get option list for some fields
@@ -188,6 +192,25 @@ protected
   end
 
 private
+  def get_current_user
+    # Name it differently to avoid collision with the often used @current_user variable name.
+    unless @__pg_current_user
+      @__pg_current_user = begin
+        to_call = Rails.configuration.rails_powergrid[:fetch_user_method]
+
+        if to_call.is_a?(Symbol) || to_call.is_a?(String)
+          send(to_call)
+        elsif to_call.is_a?(Proc)
+          instance_eval(&to_call)
+        else
+          raise ":fetch_user_method in configuration of Rails Powergrid should be a symbol, a string or a lambda."
+        end
+      end
+    end
+
+    @__pg_current_user
+  end
+
   def set_default_json
     params[:format] ||= :json
   end

@@ -14,8 +14,6 @@ HeaderColumns = React.createClass
     evt.stopPropagation()
     evt.preventDefault()
 
-    console.log "click?"
-
     if @props.data.sortable
       parent = @props.parent
       parentState = @props.parent.state
@@ -53,11 +51,12 @@ HeaderColumns = React.createClass
     @props.parent.setState dragMode: {
       update: (evt) =>
         @delta = evt.pageX - @startPosition
-        newW = Math.max(10, Math.min(200, @startWidth+@delta))
-        @setState(width: @startWidth+@delta)
+        newW = Math.max(20, @startWidth+@delta)
+        @setState(width: newW)
       finish: (evt) =>
         info = @props.parent.getColumnInfo(@props.data.field)
         info.width = @state.width
+        @props.parent.setPreference(info.field, 'width', @state.width)
         @props.parent.forceUpdate()
         @inResizing = false
     }

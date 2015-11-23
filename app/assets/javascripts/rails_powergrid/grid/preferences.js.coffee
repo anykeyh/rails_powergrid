@@ -2,14 +2,17 @@ RailsPowergrid._GridStruct.Preferences =
   preferences: {}
 
   setPreference: (columnName, field, value) ->
+    return unless RailsPowergrid.prefEnabled
+
     @state.preferences[columnName] ||= {}
     @state.preferences[columnName][field] = value
 
-    @state.setState preferences: @state.preferences
+    @setState preferences: @state.preferences
 
     RailsPowergrid.ajax @getCtrlPath("update_preferences"),
       method: "POST"
-      data: RailsPowergrid.kv(columnName, RailsPowergrid.kv(field, value))
+      data:
+        columns: RailsPowergrid.kv(columnName, RailsPowergrid.kv(field, value))
       #Do nothing in case of success or error.
       success: ->
       error: ->

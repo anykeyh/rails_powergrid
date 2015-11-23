@@ -17,6 +17,7 @@ class ActionDispatch::Routing::Mapper
     post "grids/:grid/create" => "#{ctrl}#create", as: "powergrid_create", :name_prefix => nil
     post "grids/:grid/new" => "#{ctrl}#new"
     match "grids/:grid" => "#{ctrl}#update", via: [:put, :patch]
+    post "grids/:grid/update_preferences" => "#{ctrl}#update_preferences"
 
     post "grids/:grid/:id" => "#{ctrl}#read"
     post "grids/:grid/:id/update_field" => "#{ctrl}#update_field"
