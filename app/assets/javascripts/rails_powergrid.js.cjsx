@@ -13,6 +13,9 @@
 @RailsPowergrid = {}
 @RailsPowergrid._GridStruct = {}
 
+# Simple key-value hash constructor
+@RailsPowergrid.kv = (k, v) -> (h={})[k]=v; h
+
 @RailsPowergrid.deepEqual = (x,y) ->
 
   if typeof x is "object" and x isnt null and typeof y is "object" && y isnt null

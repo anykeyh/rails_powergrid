@@ -51,4 +51,8 @@ class RailsPowergrid::Column::DSL
     def renderer value
       @column.renderer = value
     end
+
+    def in_form value
+      @column.in_form = value
+    end
 end

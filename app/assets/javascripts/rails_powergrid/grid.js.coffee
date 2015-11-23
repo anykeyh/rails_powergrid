@@ -30,6 +30,7 @@ include
 
     state = {
       filters: {}
+      preferences: {}
     }
     state[k]=v for k,v of @props
 
@@ -312,6 +313,10 @@ include
         []
 
   render: ->
+    mergedColumnPreferences = [].concat @state.columns
+    for col in mergedColumnPreferences
+      @getPreferences(col.field)
+
     time = Date.now()
     result = <div className="powergrid powergrid-clearfix"
       onMouseUp=@handleMouseUp

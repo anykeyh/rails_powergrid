@@ -7,7 +7,6 @@
 #  eq: {:t=>"toto"}
 #  eq: {:a=>1}
 #  eq: {:b=>2}
-
 # (c=1 AND b=2) OR t='toto' OR a=1 OR b=2
 
 class SimpleNode

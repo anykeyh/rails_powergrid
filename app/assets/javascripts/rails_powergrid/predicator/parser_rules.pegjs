@@ -1,6 +1,6 @@
 /*
  Parser rules for clause "WHERE"
- To use combined with `predicator` gem for ruby on rails, for example :-)
+ To use combined with powergrid gem for ruby on rails
 */
 start=
  additive_test

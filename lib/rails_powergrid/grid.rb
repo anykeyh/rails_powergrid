@@ -192,7 +192,7 @@ class RailsPowergrid::Grid
   def initialize_new_model
     m = @model.new
     @columns.each do |c|
-      c.set_default! m
+      c.set_default!(m) if c.in_form?
     end
     m
   end
