@@ -141,7 +141,7 @@ module RailsPowergrid::GridConcern
       col = @grid.get_column(params[:field])
 
       if col
-        RailsPowergrid::Preference.update(get_current_user, self, params[:field], v)
+        #RailsPowergrid::Preference.update(get_current_user, self, params[:field], v)
       end
 
     end
