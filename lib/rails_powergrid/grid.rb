@@ -229,7 +229,7 @@ class RailsPowergrid::Grid
 out = <<HTML
   <div id="#{props[:id]}"></div>
   <script>
-    React.render(React.createElement(RailsPowergrid.Grid, #{props.to_json}), document.getElementById("#{props[:id]}"));
+    ReactDOM.render(React.createElement(RailsPowergrid.Grid, #{props.to_json}), document.getElementById("#{props[:id]}"));
   </script>
 HTML
 

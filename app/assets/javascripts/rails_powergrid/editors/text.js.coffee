@@ -1,6 +1,6 @@
 RailsPowergrid.Editors.Text = React.createClass
   componentDidMount: ->
-    @getDOMNode().querySelector("input").select()
+    @refs.input.select()
 
   getInitialState: -> @props
 
@@ -12,11 +12,11 @@ RailsPowergrid.Editors.Text = React.createClass
     switch evt.key
       when "Enter", "KeyDown", "KeyUp" #Fix this issue: the parent row component get focus on the key events...
         evt.preventDefault()
-        @getDOMNode().querySelector("input").blur()
+        @refs.input.blur()
 
   componentWillUnmount: ->
     if @state.value
       @props.onUpdate?(@state.value)
 
   render: ->
-    <div className="powergrid-editor-text"><input type="text" value={@state.value} onKeyPress=@handleKeyPress onChange=@updateValue /></div>
+    <div className="powergrid-editor-text"><input ref="input" type="text" value={@state.value} onKeyPress=@handleKeyPress onChange=@updateValue /></div>

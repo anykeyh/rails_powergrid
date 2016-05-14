@@ -3,7 +3,7 @@ RailsPowergrid.registerAction 'edit',
   application: '1+'
 
   handleFormLoaded: (ajaxFormHTML) ->
-    ids = ajaxFormHTML.getDOMNode().querySelectorAll("form input[name='ids']")
+    ids = ajaxFormHTML.refs.node.querySelectorAll("form input[name='ids']")
     ids?.value = ajaxFormHTML.props.ids
 
 

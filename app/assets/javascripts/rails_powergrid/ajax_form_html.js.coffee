@@ -24,16 +24,16 @@ RailsPowergrid.AjaxFormHTML = React.createClass
       RailsPowergrid.AjaxFormHTML.instance = null
 
   evalScriptMarkups: ->
-    scripts = @getDOMNode().getElementsByTagName('script')
+    scripts = @refs.node.getElementsByTagName('script')
     eval(s.innerHTML) for s in scripts
 
   componentDidUpdate: -> @evalScriptMarkups()
 
   render: ->
     if @state.html
-      <div dangerouslySetInnerHTML={__html: @state.html}></div>
+      <div dangerouslySetInnerHTML={__html: @state.html} ref="node"></div>
     else
-      <div>Loading...</div>
+      <div ref="node">Loading...</div>
 
 
 RailsPowergrid.prepareForm = (action, formElement, grid) ->
@@ -42,7 +42,7 @@ RailsPowergrid.prepareForm = (action, formElement, grid) ->
     if id=input.getAttribute("data-check")
       do(id) ->
         input.onchange = ->
-          formElement.querySelector("##{id}").checked = true
+          formElement.querySelector("##{id}")?.checked = true
 
   for elm in formElement.querySelectorAll("[data-behavior='close']")
     elm.onclick = ->
@@ -58,8 +58,8 @@ RailsPowergrid.prepareForm = (action, formElement, grid) ->
     RailsPowergrid.ajax url,
       method: method
       data: data
-      error: (req) ->
-        if req.status == 422
+      error: (req) =>
+        if req.status is 422
           json = JSON.parse(req.response)
 
           elm = formElement.querySelector(".powergrid-errors")
@@ -74,7 +74,7 @@ RailsPowergrid.prepareForm = (action, formElement, grid) ->
         else
           alert("Something wrong happens.")
           console.error req.response
-      success: (req) ->
+      success: (req) =>
         grid.refreshData()
-        unless document.getElementById('powergrid_cb_continue_creation')?.value?
+        unless formElement.querySelector('#powergrid_cb_continue_creation')?.checked
           RailsPowergrid.Modal.close()

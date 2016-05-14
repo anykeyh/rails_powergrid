@@ -54,7 +54,7 @@ include
     RailsPowergrid.Grid._register(@getName(), this)
 
     for evtName in ['mousewheel', 'DOMMouseScroll']
-      @getDOMNode().querySelector(".powergrid-data-content-wrapper").addEventListener(evtName, ( (evt) => @preventDefaultScrolling(evt) ), false)
+      @refs.wrapper.addEventListener(evtName, ( (evt) => @preventDefaultScrolling(evt) ), false)
 
     @fireMountedEvent?()
 
@@ -63,7 +63,7 @@ include
   componentDidUpdate: ->
     height = @props.height || 500;
 
-    elm = @getDOMNode()
+    elm = @refs.root
     childs = elm.childNodes
 
     sumHeight = 0
@@ -254,7 +254,7 @@ include
 
   handleKeyPress: (evt) ->
 
-    contentWrapper = @getDOMNode().querySelector(".powergrid-data-content-wrapper")
+    contentWrapper = @refs.wrapper
 
     switch evt.key
       when "ArrowDown"
@@ -321,13 +321,13 @@ include
     time = Date.now()
     result = <div className="powergrid powergrid-clearfix"
       onMouseUp=@handleMouseUp
-      onMouseMove=@handleMouseMove>
+      onMouseMove=@handleMouseMove ref="root">
       <RailsPowergrid.ActionBar actions=@state.actions parent=this />
 
       <div className="powergrid-allow-horizontal-overflow">
         <RailsPowergrid.FiltersBar columns=@state.columns parent=this />
         <RailsPowergrid.HeaderColumns columns=@state.columns parent=this />
-        <div className="powergrid-data-content-wrapper"
+        <div className="powergrid-data-content-wrapper" ref="wrapper"
         style=@getContentWrapperStyle()
         onScroll=@handleScrolling
         onKeyDown=@handleKeyPress
@@ -340,7 +340,6 @@ include
     </div>
 
     time = Date.now()-time
-    console.log "#{time}ms"
 
     result
 

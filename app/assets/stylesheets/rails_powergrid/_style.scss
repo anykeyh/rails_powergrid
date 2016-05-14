@@ -67,6 +67,7 @@ $background-invert-lighter: #414141;
   font-size: 1.0em;
   box-sizing: border-box;
   padding: 0.125em 0.25em;
+  color: #444;
 
   &:hover { border: solid 2px $border-hover; }
   &:focus { border: solid 2px $border-focus; }

@@ -1,4 +1,4 @@
-RailsPowergrid.Renderers.Date = React.createClass
+RailsPowergrid.Renderers.Datetime = React.createClass
   statics:
     MONTH_NAMES: [
         "Jan", "Feb", "Mar",
@@ -8,11 +8,16 @@ RailsPowergrid.Renderers.Date = React.createClass
       ];
   renderDate: (date) ->
     if date
-      day = date.getDate();
-      month = DateTime.MONTH_NAMES[date.getMonth()];
-      year = date.getFullYear();
+      day = date.getDate()
+      month = RailsPowergrid.Renderers.Datetime.MONTH_NAMES[date.getMonth()]
+      year = date.getFullYear()
+      hours = ""+date.getHours()
+      minutes = ""+date.getMinutes()
 
-      "#{month}, #{day} #{year}"
+      hours = "0#{hours}" if hours.length is 1
+      minutes = "0#{minutes}" if minutes.length is 1
+
+      "#{month}, #{day} #{year} #{hours}:#{minutes}"
 
   render: ->
     <div className="powergrid-date-renderer">

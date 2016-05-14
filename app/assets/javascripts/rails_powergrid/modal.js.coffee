@@ -4,12 +4,12 @@ RailsPowergrid.Modal = React.createClass
     show: (modalElement) ->
       div = document.createElement("div")
       document.body.appendChild(div)
-      React.render( modalElement, div )
+      ReactDOM.render( modalElement, div )
     close: ->
       RailsPowergrid.Modal.stack[RailsPowergrid.Modal.stack.length-1].handleClose()
 
   handleClose: ->
-    React.unmountComponentAtNode(@getDOMNode().parentNode)
+    ReactDOM.unmountComponentAtNode(@refs.root.parentNode)
     return
 
   doNotClose: (evt) ->
@@ -23,7 +23,7 @@ RailsPowergrid.Modal = React.createClass
     RailsPowergrid.Modal.stack.pop
 
   render: ->
-    <div className="powergrid-modal-black-layer" onClick=@handleClose>
+    <div className="powergrid-modal-black-layer" onClick=@handleClose ref="root">
 
       <div className="powergrid-modal" onClick=@doNotClose>
         <div className="powergrid-modal-title">{@props.title}</div>

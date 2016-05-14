@@ -28,10 +28,10 @@ RailsPowergrid.Cell = React.createClass
         {
           if @state.editMode
             _editor = RailsPowergrid.Editors[@props.opts.editor]
-            <_editor parent=@props.parent objectId=@props.objectId cell=this opts=@props.opts value=@props.value onUpdate=@handleEditionFinished />
+            React.createElement _editor, parent:@props.parent, objectId:@props.objectId, cell:this, opts:@props.opts, value:@props.value, onUpdate:@handleEditionFinished
           else
             _renderer = RailsPowergrid.Renderers[@props.opts.renderer]
-            <_renderer parent=@props.parent objectId=@props.objectId cell=this opts=@props.opts value=@props.value />
+            React.createElement _renderer, parent:@props.parent, objectId:@props.objectId, cell:this, opts:@props.opts, value:@props.value
         }
       </div>
     </div>

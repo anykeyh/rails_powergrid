@@ -18,10 +18,9 @@ RailsPowergrid.Editors.Select = React.createClass
             value = id
             break
 
-        console.log "setState", options, value
         @setState(options: options, value: value)
 
-    @getDOMNode().querySelector("select").focus()
+    @refs.select.focus()
 
   updateValue: (evt) ->
     @setState(value: evt.target.value)
@@ -34,7 +33,7 @@ RailsPowergrid.Editors.Select = React.createClass
     currentSelection = @state.value
 
     <div className="powergrid-editor-select">
-      <select value=currentSelection onChange=@updateValue>
+      <select value=currentSelection onChange=@updateValue ref="select">
         {
           for [id,text,selected] in @state.options
             <option value="#{id}" key="#{id}">{text}</option>

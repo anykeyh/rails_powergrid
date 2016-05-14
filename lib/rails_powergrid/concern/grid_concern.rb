@@ -35,7 +35,7 @@ module RailsPowergrid::GridConcern
   # SHOW MULTIPLE MODELS EDIT FORM
   def edit
     @ids = params[:ids].map(&:to_i)
-    @resources = @grid.where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + params[:ids] )
+    @resources = prepare_collection_query.where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + params[:ids] )
     @permitted_columns = @grid.form_permit
 
     #Combinate the resources
@@ -83,7 +83,7 @@ module RailsPowergrid::GridConcern
   # UPDATE MULTIPLE MODELS
   def update
     @ids = params[:ids].split(",").map(&:to_i)
-    @resources = @grid.where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + @ids)
+    @resources = prepare_collection_query.where("#{@grid.model.arel_table.name}.id IN (?)", [-1] + @ids)
 
     permitted_columns = @grid.form_permit.map(&:to_sym)
 
@@ -101,7 +101,7 @@ module RailsPowergrid::GridConcern
     end
 
     begin
-      Customer.transaction do |t|
+      ActiveRecord::Base.transaction do |t|
         is_saved = !@resources.map(&:save).uniq.include?(false)
         if is_saved
           render :json => { status: "OK" }
@@ -125,7 +125,7 @@ module RailsPowergrid::GridConcern
       end
 
       if @resource.save
-        render :json => @grid.get_hash(@resource)
+        render :json => @grid.get_hash(prepare_collection_query.where(id: @resource.id).first)
       else
         render :json => {status: "ERROR", errors: @resource.errors.messages }, status: :unprocessable_entity
       end
@@ -175,6 +175,7 @@ protected
     @query = @grid.prepare_query(self).predicator(filter, @grid)
 
     set_order_limit_and_offset
+    @query
   end
 
 
